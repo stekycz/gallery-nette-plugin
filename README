@@ -1,0 +1,14 @@
+=== Gallery Nette Plugin ===
+
+Author: Martin Štekl <martin.stekl@gmail.com>
+
+== Description ==
+Plugin helps to create galleries of photos. Contains database structure, model,
+controls and default gallery UI (fancybox).
+
+It is based on Nette Framerwork.
+
+== Instalation ==
+It depends on Nette, dibi and MultipleFileUploader (Nette Plugin).
+
+Note: Database layer can be replaced.
