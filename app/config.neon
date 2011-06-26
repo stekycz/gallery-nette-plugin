@@ -1,0 +1,27 @@
+common:
+	php: # PHP configuration
+		date.timezone: Europe/Prague
+
+	services:
+		robotLoader:
+			run: true
+
+production < common:
+	database:
+		driver: mysql
+		host: 127.0.0.1
+		database: gallery
+		username: root
+		password: poklad
+		lazy: false
+		profiler: true
+
+development < common:
+	database:
+		driver: mysql
+		host: 127.0.0.1
+		database: gallery
+		username: root
+		password: poklad
+		lazy: false
+		profiler: true

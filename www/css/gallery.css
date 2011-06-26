@@ -1,0 +1,49 @@
+.galleries, .photos {
+	border: 0;
+	margin: 0;
+}
+
+.galleries td, .photos td {
+	padding: 0.5em 0.8em;
+	vertical-align: top;
+}
+
+.galleries a, .photos a {
+	display: block;
+	text-decoration: none;
+}
+
+.galleries a:hover span, .photos a:hover span {
+	text-decoration: underline;
+}
+
+.galleries img, .photos img {
+	vertical-align: top;
+}
+
+.galleries span, .photos span {
+	margin: 0;
+	padding: 0;
+	font-size: 12px;
+}
+
+.galleries td a:hover p, .galleries td a:hover small, .photos td a:hover p, .photos td a:hover small {
+	text-decoration: underline;
+}
+
+.galleries a .thumbnail, .photos a .thumbnail {
+	margin: 8.8px;
+	box-shadow: 0 0 12px #888;
+}
+
+.galleries a:hover .thumbnail, .photos a:hover .thumbnail {
+	text-decoration: none;
+	box-shadow: 0 0 12px #333;
+	-moz-box-shadow: 0 0 12px #333;
+	-webkit-box-shadow: 0 0 12px #333;
+}
+
+.galleries span.actions a, .photos span.actions a {
+	float: left;
+	margin-right: 0.5em;
+}

@@ -1,0 +1,43 @@
+{*
+ * @param string $action
+ * @param array $galleries
+ * @param string $filesBaseUri
+ * @param bool $isAdmin
+ *}
+
+{if $galleries}
+<table class="galleries">
+	<colgroup>
+		<col style="width: 165px;" />
+		<col style="width: 165px;" />
+		<col style="width: 165px;" />
+		<col style="width: 165px;" />
+		<col style="width: 165px;" />
+	</colgroup>
+	<tbody>
+		<tr>
+			{foreach $galleries as $gallery}
+				{if $iterator->getCounter() > 1 && $iterator->getCounter() % 5 == 1}
+		</tr>
+		<tr>
+				{/if}
+			<td title="{$gallery['description']} ({$gallery['photo_count']} fotek)">
+				<a href="{plink $action, id => $gallery['gallery_id']}">
+					<img class="thumbnail" src="{$filesBaseUri}/{$gallery['gallery_id']}/thumbnails/{$gallery['title_filename']}" alt="" />
+					<span>{$gallery['title']}</span>
+				</a>
+				{if $isAdmin}
+				<span class="actions">
+				<a href="#" title="Změnit viditelnost"><img src="{$baseUri}/images/{if $gallery['is_active']}eye.png{else}eye-close.png{/if}" alt="Změnit viditelnost"></a>
+				<a href="#" title="Upravit"><img src="{$baseUri}/images/pencil.png" alt="Upravit"></a>
+				<a href="#" title="Smazat"><img src="{$baseUri}/images/cross.png" alt="Smazat"></a>
+				</span>
+				{/if}
+			</td>
+			{/foreach}
+		</tr>
+	</tbody>
+</table>
+{else}
+<p>No gallery was found.</p>
+{/if}
