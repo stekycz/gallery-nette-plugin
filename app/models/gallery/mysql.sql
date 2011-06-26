@@ -7,7 +7,6 @@ DROP TABLE IF EXISTS `gallery`;
 CREATE TABLE `gallery` (
   `gallery_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `is_active` tinyint(1) unsigned NOT NULL DEFAULT '1',
-  `is_deleted` tinyint(1) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`gallery_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -29,7 +28,6 @@ CREATE TABLE `gallery_photo` (
   `filename` varchar(100) NOT NULL,
   `ordering` int(10) unsigned NOT NULL,
   `is_active` tinyint(1) unsigned NOT NULL DEFAULT '1',
-  `is_deleted` tinyint(1) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`photo_id`),
   KEY `gallery_id` (`gallery_id`),
   CONSTRAINT `gallery_photo_ibfk_2` FOREIGN KEY (`gallery_id`) REFERENCES `gallery` (`gallery_id`) ON DELETE CASCADE ON UPDATE CASCADE

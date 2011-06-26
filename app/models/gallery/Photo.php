@@ -4,12 +4,19 @@
  * @author Martin Štekl <martin.stekl@gmail.com>
  * @since 2011-06-26
  */
-class Photo extends Object {
+class Photo extends Object implements IGalleryItem {
 	
 	/**
 	 * Creates new photo.
 	 */
-	public static function create() {
+	public function create() {
+		throw new NotImplementedException();
+	}
+	
+	/**
+	 * Updates photo.
+	 */
+	public function update() {
 		throw new NotImplementedException();
 	}
 	
@@ -18,8 +25,25 @@ class Photo extends Object {
 	 * 
 	 * @param int $id Photo ID
 	 */
-	public static function toggleActive($id) {
-		throw new NotImplementedException();
+	public function toggleActive($id) {
+		dibi::begin();
+		
+		$is_active = dibi::fetchSingle('
+			SELECT tgp.is_active
+			FROM gallery_photo AS tgp
+			WHERE tgp.photo_id = %s', $id, '
+			LIMIT 1
+		');
+		
+		$is_active = $is_active ? 0 : 1;
+		
+		dibi::query('
+			UPDATE gallery_photo
+			SET is_active = %s', $is_active, '
+			WHERE photo_id = %s', $id, '
+		');
+		
+		dibi::commit();
 	}
 	
 	/**
@@ -27,8 +51,13 @@ class Photo extends Object {
 	 * 
 	 * @param int $id Photo ID
 	 */
-	public static function delete($id) {
-		throw new NotImplementedException();
+	public function delete($id) {
+		$this->deleteFile($id);
+		
+		dibi::query('
+			DELETE FROM gallery_photo
+			WHERE photo_id = %s', $id, '
+		');
 	}
 	
 	/**
@@ -36,7 +65,7 @@ class Photo extends Object {
 	 * 
 	 * @param int $id Photo ID
 	 */
-	protected static function deleteFile($id) {
+	protected function deleteFile($id) {
 		throw new NotImplementedException();
 	}
 	
@@ -45,8 +74,21 @@ class Photo extends Object {
 	 * 
 	 * @param int $id Photo ID 
 	 */
-	public static function moveLeft($id) {
-		throw new NotImplementedException();
+	public function moveLeft($id) {
+		$left_id = dibi::fetchSingle('
+			SELECT tgp.photo_id
+			FROM gallery_photo AS tgp
+			WHERE tgp.ordering < (
+				SELECT tgp2.ordering
+				FROM gallery_photo AS tgp2
+				WHERE tgp2.photo_id = %s', $id, '
+					AND tgp2.gallery_id = tgp.gallery_id
+				LIMIT 1
+			)
+			ORDER BY tgp.ordering DESC
+			LIMIT 1
+		');
+		$this->swapPhotos($id, $left_id);
 	}
 
 	/**
@@ -54,8 +96,21 @@ class Photo extends Object {
 	 * 
 	 * @param int $id Photo ID 
 	 */
-	public static function moveRight($id) {
-		throw new NotImplementedException();
+	public function moveRight($id) {
+		$right_id = dibi::fetchSingle('
+			SELECT tgp.photo_id
+			FROM gallery_photo AS tgp
+			WHERE tgp.ordering > (
+				SELECT tgp2.ordering
+				FROM gallery_photo AS tgp2
+				WHERE tgp2.photo_id = %s', $id, '
+					AND tgp2.gallery_id = tgp.gallery_id
+				LIMIT 1
+			)
+			ORDER BY tgp.ordering ASC
+			LIMIT 1
+		');
+		$this->swapPhotos($id, $right_id);
 	}
 	
 	/**
@@ -64,8 +119,28 @@ class Photo extends Object {
 	 * @param int $photo_id_1 Photo ID
 	 * @param int $photo_id_2 Photo ID
 	 */
-	protected static function _swapPhotos($photo_id_1, $photo_id_2) {
-		throw new NotImplementedException();
+	protected function swapPhotos($photo_id_1, $photo_id_2) {
+		dibi::begin();
+		
+		$orderings = (array) dibi::fetchPairs('
+			SELECT tgp.photo_id, tgp.ordering
+			FROM gallery_photo AS tgp
+			WHERE tgp.photo_id IN %l', array($photo_id_1, $photo_id_2, ), '
+		');
+		
+		dibi::query('
+			UPDATE gallery_photo
+			SET ordering = %s', $orderings[$photo_id_2], '
+			WHERE photo_id = %s', $photo_id_1, '
+		');
+		
+		dibi::query('
+			UPDATE gallery_photo
+			SET ordering = %s', $orderings[$photo_id_1], '
+			WHERE photo_id = %s', $photo_id_2, '
+		');
+		
+		dibi::commit();
 	}
 	
 	/**
@@ -76,7 +151,7 @@ class Photo extends Object {
 	 * @param bool $admin
 	 * @return DibiResult
 	 */
-	public static function getByGallery($id, $admin = false) {
+	public function getByGallery($id, $admin = false) {
 		$photo_array = dibi::fetchAll('
 			SELECT
 				tgp.photo_id,
@@ -84,12 +159,20 @@ class Photo extends Object {
 				tgp.gallery_id,
 				tgp.filename
 			FROM gallery_photo AS tgp
-			WHERE tgp.is_deleted = 0
-				AND tgp.gallery_id = %s', $id, '
+			WHERE tgp.gallery_id = %s', $id, '
 				%SQL', (!$admin ? 'AND tgp.is_active = 1' : ''), '
 			ORDER BY tgp.ordering
 		');
 		return $photo_array;
+	}
+	
+	/**
+	 * Returns base uri for gallery files.
+	 * 
+	 * @return string
+	 */
+	public function getBaseUri() {
+		return Environment::getHttpRequest()->url->baseUrl . '/files/gallery';
 	}
 	
 }

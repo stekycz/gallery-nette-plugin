@@ -18,6 +18,7 @@
 	});
 </script>
 
+{snippet photo-table}
 <table class="photos">
 	<colgroup>
 		<col style="width: 165px;" />
@@ -39,10 +40,22 @@
 				</a>
 				{if $isAdmin}
 				<span class="actions">
-				<a href="#" title="Vlevo"><img src="{$baseUri}/images/arrow-180-small.png" alt="Vlevo"></a>
-				<a href="#" title="Změnit viditelnost"><img src="{$baseUri}/images/{if $photo['is_active']}eye.png{else}eye-close.png{/if}" alt="Změnit viditelnost"></a>
-				<a href="#" title="Smazat"><img src="{$baseUri}/images/cross.png" alt="Smazat"></a>
-				<a href="#" title="Vpravo"><img src="{$baseUri}/images/arrow-000-small.png" alt="Vpravo"></a>
+				{if !$iterator->isFirst()}
+				<a n:href="moveLeft, id => $photo['photo_id']" onclick="return!nette.action(this);" title="Vlevo">
+					<img src="{$baseUri}/images/arrow-180-small.png" alt="Vlevo">
+				</a>
+				{/if}
+				<a n:href="toggleActive, id => $photo['photo_id']" onclick="return!nette.action(this);" title="Změnit viditelnost">
+					<img src="{$baseUri}/images/{if $photo['is_active']}eye.png{else}eye-close.png{/if}" alt="Změnit viditelnost">
+				</a>
+				<a n:href="delete, id => $photo['photo_id']" onclick="return!nette.action(this);" title="Smazat">
+					<img src="{$baseUri}/images/cross.png" alt="Smazat">
+				</a>
+				{if !$iterator->isLast()}
+				<a n:href="moveRight, id => $photo['photo_id']" onclick="return!nette.action(this);" title="Vpravo">
+					<img src="{$baseUri}/images/arrow-000-small.png" alt="Vpravo">
+				</a>
+				{/if}
 				</span>
 				{/if}
 			</td>
@@ -50,4 +63,5 @@
 		</tr>
 	</tbody>
 </table>
+{/snippet}
 {/if}

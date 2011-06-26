@@ -5,19 +5,25 @@
  * @since 2011-06-26
  */
 class PhotoControl extends Control {
-	
-	/**
-	 * @var array
-	 */
-	private $photos = array();
-	/**
-	 * @var string URI files path
-	 */
-	private $galleriesBaseUri = '/files';
+
 	/**
 	 * @var bool Show admin environment?
 	 */
-	private $isAdmin = false;
+	protected $isAdmin = false;
+	/**
+	 * @var IGalleryItem
+	 */
+	protected $model;
+	/**
+	 * @var int Gallery ID
+	 */
+	protected $gallery_id;
+	
+	public function __construct(ComponentContainer $parent, $name, IGalleryItem $model, $gallery_id) {
+		parent::__construct($parent, $name);
+		$this->model = $model;
+		$this->gallery_id = $gallery_id;
+	}
 	
 	/**
 	 * Creates new instance of control.
@@ -26,26 +32,8 @@ class PhotoControl extends Control {
 	 * @param string $name
 	 * @return PhotoControl
 	 */
-	public static function create(ComponentContainer $parent, $name) {
-		return new self($parent, $name);
-	}
-	
-	/**
-	 * @param array $photos
-	 * @return PhotoControl
-	 */
-	public function setPhotos($photos) {
-		$this->photos = $photos;
-		return $this;
-	}
-	
-	/**
-	 * @param string $baseUri
-	 * @return PhotoControl
-	 */
-	public function setBaseUri($baseUri) {
-		$this->galleriesBaseUri = $baseUri;
-		return $this;
+	public static function create(ComponentContainer $parent, $name, IGalleryItem $model, $gallery_id) {
+		return new self($parent, $name, $model, $gallery_id);
 	}
 	
 	/**
@@ -61,11 +49,55 @@ class PhotoControl extends Control {
 	 * Renders photogallery.
 	 */
 	public function render() {
-		$this->template->photos = $this->photos;
-		$this->template->filesBaseUri = $this->galleriesBaseUri;
 		$this->template->isAdmin = $this->isAdmin;
+		$this->template->photos = $this->model->getByGallery($this->gallery_id, $this->isAdmin);
+		$this->template->filesBaseUri = $this->model->getBaseUri();
 		$this->template->setFile(dirname(__FILE__) . '/photos.latte');
 		$this->template->render();
+	}
+	
+	/**
+	 * Toggles activity/visibility of photo.
+	 * 
+	 * @param int $id Photo ID
+	 */
+	public function handleToggleActive($id) {
+		$this->template->setFile(dirname(__FILE__) . '/photos.latte');
+		$this->model->toggleActive($id);
+		$this->invalidateControl('photo-table');
+	}
+
+	/**
+	 * Deletes photo.
+	 * 
+	 * @param int $id Photo ID
+	 */
+	public function handleDelete($id) {
+		$this->template->setFile(dirname(__FILE__) . '/photos.latte');
+		$this->model->delete($id);
+		$this->invalidateControl('photo-table');
+	}
+	
+	/**
+	 * Changes ordering of file to left.
+	 * 
+	 * @param int $id Photo ID
+	 */
+	public function handleMoveLeft($id) {
+		$this->template->setFile(dirname(__FILE__) . '/photos.latte');
+		$this->model->moveLeft($id);
+		$this->invalidateControl('photo-table');
+	}
+
+	/**
+	 * Changes ordering of file to right.
+	 * 
+	 * @param int $id Photo ID
+	 */
+	public function handleMoveRight($id) {
+		$this->template->setFile(dirname(__FILE__) . '/photos.latte');
+		$this->model->moveRight($id);
+		$this->invalidateControl('photo-table');
 	}
 	
 }

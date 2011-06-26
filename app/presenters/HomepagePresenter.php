@@ -6,32 +6,22 @@
  */
 class HomepagePresenter extends BasePresenter {
 
-	public function renderDefault() {
-		GalleryControl::create($this, 'galleries')
-			->setGalleries(Gallery::getAll())
-			->setBaseUri($this->getHttpRequest()->url->baseUrl . '/files/gallery')
-			->setGalleryAction('Homepage:gallery');
+	public function actionDefault() {
+		GalleryControl::create($this, 'galleries', new Gallery(), 'Homepage:gallery');
 	}
 	
-	public function renderGallery($id) {
-		PhotoControl::create($this, 'photos')
-			->setPhotos(Photo::getByGallery($id))
-			->setBaseUri($this->getHttpRequest()->url->baseUrl . '/files/gallery');
+	public function actionGallery($id) {
+		PhotoControl::create($this, 'photos', new Photo(), $id);
 	}
 	
-	public function renderAdminList() {
-		GalleryControl::create($this, 'galleries')
-			->setGalleries(Gallery::getAll(true))
-			->setAdmin(true)
-			->setBaseUri($this->getHttpRequest()->url->baseUrl . '/files/gallery')
-			->setGalleryAction('Homepage:adminGallery');
+	public function actionAdminList() {
+		GalleryControl::create($this, 'galleries', new Gallery(), 'Homepage:adminGallery', 'Homepage:editGallery')
+			->setAdmin(true);
 	}
 	
-	public function renderAdminGallery($id) {
-		PhotoControl::create($this, 'photos')
-			->setPhotos(Photo::getByGallery($id, true))
-			->setAdmin(true)
-			->setBaseUri($this->getHttpRequest()->url->baseUrl . '/files/gallery');
+	public function actionAdminGallery($id) {
+		PhotoControl::create($this, 'photos', new Photo(), $id)
+			->setAdmin(true);
 	}
 	
 	public function renderEditGallery($id) {

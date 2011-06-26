@@ -4,12 +4,19 @@
  * @author Martin Štekl <martin.stekl@gmail.com>
  * @since 2011-06-26
  */
-class Gallery extends Object {
+class Gallery extends Object implements IGallery {
 	
 	/**
 	 * Creates new gallery.
 	 */
-	public static function create() {
+	public function create() {
+		throw new NotImplementedException();
+	}
+	
+	/**
+	 * Updates gallery.
+	 */
+	public function update() {
 		throw new NotImplementedException();
 	}
 	
@@ -18,8 +25,25 @@ class Gallery extends Object {
 	 * 
 	 * @param int $id Gallery ID
 	 */
-	public static function toggleActive($id) {
-		throw new NotImplementedException();
+	public function toggleActive($id) {
+		dibi::begin();
+		
+		$is_active = dibi::fetchSingle('
+			SELECT tg.is_active
+			FROM gallery AS tg
+			WHERE tg.gallery_id = %s', $id, '
+			LIMIT 1
+		');
+		
+		$is_active = $is_active ? 0 : 1;
+		
+		dibi::query('
+			UPDATE gallery
+			SET is_active = %s', $is_active, '
+			WHERE gallery_id = %s', $id, '
+		');
+		
+		dibi::commit();
 	}
 	
 	/**
@@ -27,8 +51,13 @@ class Gallery extends Object {
 	 * 
 	 * @param int $id Gallery ID
 	 */
-	public static function delete($id) {
-		throw new NotImplementedException();
+	public function delete($id) {
+		$this->deleteFolder($id);
+		
+		dibi::query('
+			DELETE FROM gallery
+			WHERE gallery_id = %s', $id, '
+		');
 	}
 	
 	/**
@@ -36,7 +65,7 @@ class Gallery extends Object {
 	 * 
 	 * @param int $id Gallery ID
 	 */
-	protected static function deleteFolder($id) {
+	protected function deleteFolder($id) {
 		throw new NotImplementedException();
 	}
 	
@@ -47,7 +76,7 @@ class Gallery extends Object {
 	 * @param bool $admin
 	 * @return DibiResult
 	 */
-	public static function getAll($admin = false) {
+	public function getAll($admin = false) {
 		$gallery_array = dibi::fetchAll('
 			SELECT
 				tg.gallery_id,
@@ -56,18 +85,26 @@ class Gallery extends Object {
 				tge.description,
 				(
 					SELECT tgp.filename FROM gallery_photo AS tgp
-					WHERE tgp.gallery_id = tg.gallery_id AND tgp.is_deleted = 0 AND tgp.is_active = 1
+					WHERE tgp.gallery_id = tg.gallery_id AND tgp.is_active = 1
 					ORDER BY tgp.ordering ASC
 					LIMIT 1
 				) AS title_filename,
-				(SELECT COUNT(*) FROM gallery_photo AS tgp WHERE tgp.is_active = 1 AND tgp.is_deleted = 0) AS photo_count
+				(SELECT COUNT(*) FROM gallery_photo AS tgp WHERE tgp.is_active = 1) AS photo_count
 			FROM gallery AS tg
 			LEFT JOIN gallery_extended AS tge ON (tge.gallery_id = tg.gallery_id)
-			WHERE tg.is_deleted = 0
-				%SQL', (!$admin ? 'AND tg.is_active = 1' : ''), '
+			%SQL', (!$admin ? 'WHERE tg.is_active = 1' : ''), '
 			HAVING photo_count > 0
 		');
 		return $gallery_array;
+	}
+	
+	/**
+	 * Returns base uri for gallery files.
+	 * 
+	 * @return string
+	 */
+	public function getBaseUri() {
+		return Environment::getHttpRequest()->url->baseUrl . '/files/gallery';
 	}
 	
 }
