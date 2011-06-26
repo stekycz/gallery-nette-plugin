@@ -10,7 +10,7 @@ class Photo extends Object {
 	 * Creates new photo.
 	 */
 	public static function create() {
-		
+		throw new NotImplementedException();
 	}
 	
 	/**
@@ -19,7 +19,7 @@ class Photo extends Object {
 	 * @param int $id Photo ID
 	 */
 	public static function toggleActive($id) {
-		
+		throw new NotImplementedException();
 	}
 	
 	/**
@@ -28,7 +28,7 @@ class Photo extends Object {
 	 * @param int $id Photo ID
 	 */
 	public static function delete($id) {
-		
+		throw new NotImplementedException();
 	}
 	
 	/**
@@ -37,7 +37,7 @@ class Photo extends Object {
 	 * @param int $id Photo ID
 	 */
 	protected static function deleteFile($id) {
-		
+		throw new NotImplementedException();
 	}
 	
 	/**
@@ -46,7 +46,7 @@ class Photo extends Object {
 	 * @param int $id Photo ID 
 	 */
 	public static function moveLeft($id) {
-		
+		throw new NotImplementedException();
 	}
 
 	/**
@@ -55,7 +55,7 @@ class Photo extends Object {
 	 * @param int $id Photo ID 
 	 */
 	public static function moveRight($id) {
-		
+		throw new NotImplementedException();
 	}
 	
 	/**
@@ -65,7 +65,7 @@ class Photo extends Object {
 	 * @param int $photo_id_2 Photo ID
 	 */
 	protected static function _swapPhotos($photo_id_1, $photo_id_2) {
-		
+		throw new NotImplementedException();
 	}
 	
 	/**

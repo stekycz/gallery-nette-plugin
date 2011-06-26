@@ -10,7 +10,7 @@ class Gallery extends Object {
 	 * Creates new gallery.
 	 */
 	public static function create() {
-		
+		throw new NotImplementedException();
 	}
 	
 	/**
@@ -19,7 +19,7 @@ class Gallery extends Object {
 	 * @param int $id Gallery ID
 	 */
 	public static function toggleActive($id) {
-		
+		throw new NotImplementedException();
 	}
 	
 	/**
@@ -28,7 +28,7 @@ class Gallery extends Object {
 	 * @param int $id Gallery ID
 	 */
 	public static function delete($id) {
-		
+		throw new NotImplementedException();
 	}
 	
 	/**
@@ -37,7 +37,7 @@ class Gallery extends Object {
 	 * @param int $id Gallery ID
 	 */
 	protected static function deleteFolder($id) {
-		
+		throw new NotImplementedException();
 	}
 	
 	/**
