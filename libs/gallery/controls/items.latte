@@ -1,13 +1,12 @@
 {*
- * @param array $photos
- * @param string $filesBaseUri
+ * @param array $items
  * @param bool $isAdmin
  *}
 
-{if $photos}
+{if $items}
 <script type="text/javascript">
 	$(document).ready(function() {
-		$("a[rel=gallery-{!$photos[0]['gallery_id']}]").fancybox({
+		$("a[rel=group-{!$items[0]['gallery_id']}]").fancybox({
 			'transitionIn'		: 'none',
 			'transitionOut'		: 'none',
 			'titlePosition' 	: 'over',
@@ -18,8 +17,8 @@
 	});
 </script>
 
-{snippet photo-table}
-<table class="photos">
+{snippet item-table}
+<table class="items">
 	<colgroup>
 		<col style="width: 165px;" />
 		<col style="width: 165px;" />
@@ -29,30 +28,30 @@
 	</colgroup>
 	<tbody>
 		<tr>
-				{foreach $photos as $photo}
+				{foreach $items as $item}
 				{if $iterator->getCounter() > 1 && $iterator->getCounter() % 5 == 1}
 		</tr>
 		<tr>
 				{/if}
 			<td>
-				<a href="{$filesBaseUri}/{$photo['gallery_id']}/{$photo['filename']}" title="" rel="gallery-{$photo['gallery_id']}">
-					<img class="thumbnail" src="{$filesBaseUri}/{$photo['gallery_id']}/thumbnails/{$photo['filename']}" alt="" />
+				<a href="{$baseUri}/files/gallery/{$item['gallery_id']}/{$item['filename']}" title="" rel="group-{$item['gallery_id']}">
+					<img class="thumbnail" src="{$baseUri}/files/gallery/{$item['gallery_id']}/thumbnails/{$item['filename']}" alt="" />
 				</a>
 				{if $isAdmin}
 				<span class="actions">
 				{if !$iterator->isFirst()}
-				<a n:href="moveLeft, id => $photo['photo_id']" onclick="return!nette.action(this);" title="Vlevo">
+				<a n:href="moveLeft, id => $item['photo_id']" onclick="return!nette.action(this);" title="Vlevo">
 					<img src="{$baseUri}/images/arrow-180-small.png" alt="Vlevo">
 				</a>
 				{/if}
-				<a n:href="toggleActive, id => $photo['photo_id']" onclick="return!nette.action(this);" title="Změnit viditelnost">
-					<img src="{$baseUri}/images/{if $photo['is_active']}eye.png{else}eye-close.png{/if}" alt="Změnit viditelnost">
+				<a n:href="toggleActive, id => $item['photo_id']" onclick="return!nette.action(this);" title="Změnit viditelnost">
+					<img src="{$baseUri}/images/{if $item['is_active']}eye.png{else}eye-close.png{/if}" alt="Změnit viditelnost">
 				</a>
-				<a n:href="delete, id => $photo['photo_id']" onclick="return!nette.action(this);" title="Smazat">
+				<a n:href="delete, id => $item['photo_id']" onclick="return!nette.action(this);" title="Smazat">
 					<img src="{$baseUri}/images/cross.png" alt="Smazat">
 				</a>
 				{if !$iterator->isLast()}
-				<a n:href="moveRight, id => $photo['photo_id']" onclick="return!nette.action(this);" title="Vpravo">
+				<a n:href="moveRight, id => $item['photo_id']" onclick="return!nette.action(this);" title="Vpravo">
 					<img src="{$baseUri}/images/arrow-000-small.png" alt="Vpravo">
 				</a>
 				{/if}

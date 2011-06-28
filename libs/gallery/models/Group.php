@@ -4,24 +4,24 @@
  * @author Martin Štekl <martin.stekl@gmail.com>
  * @since 2011-06-26
  */
-class Gallery extends Object implements IGallery {
+class Group extends AbstractGroup {
 	
 	/**
-	 * Creates new gallery.
+	 * Creates new group.
 	 */
-	public function create() {
+	public function create(array $data) {
 		throw new NotImplementedException();
 	}
 	
 	/**
-	 * Updates gallery.
+	 * Updates group.
 	 */
-	public function update() {
+	public function update(array $data) {
 		throw new NotImplementedException();
 	}
 	
 	/**
-	 * Toggles activity/visibility of gallery.
+	 * Toggles activity/visibility of group.
 	 * 
 	 * @param int $id Gallery ID
 	 */
@@ -47,7 +47,7 @@ class Gallery extends Object implements IGallery {
 	}
 	
 	/**
-	 * Deletes gallery.
+	 * Deletes group.
 	 * 
 	 * @param int $id Gallery ID
 	 */
@@ -61,7 +61,7 @@ class Gallery extends Object implements IGallery {
 	}
 	
 	/**
-	 * Deletes whole folder of gallery.
+	 * Deletes whole folder of group.
 	 * 
 	 * @param int $id Gallery ID
 	 */
@@ -96,15 +96,6 @@ class Gallery extends Object implements IGallery {
 			HAVING photo_count > 0
 		');
 		return $gallery_array;
-	}
-	
-	/**
-	 * Returns base uri for gallery files.
-	 * 
-	 * @return string
-	 */
-	public function getBaseUri() {
-		return Environment::getHttpRequest()->url->baseUrl . '/files/gallery';
 	}
 	
 }

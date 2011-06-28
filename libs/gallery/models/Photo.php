@@ -4,19 +4,19 @@
  * @author Martin Štekl <martin.stekl@gmail.com>
  * @since 2011-06-26
  */
-class Photo extends Object implements IGalleryItem {
+class Photo extends AbstractItem {
 	
 	/**
 	 * Creates new photo.
 	 */
-	public function create() {
+	public function create(array $data) {
 		throw new NotImplementedException();
 	}
 	
 	/**
 	 * Updates photo.
 	 */
-	public function update() {
+	public function update(array $data) {
 		throw new NotImplementedException();
 	}
 	
@@ -164,15 +164,6 @@ class Photo extends Object implements IGalleryItem {
 			ORDER BY tgp.ordering
 		');
 		return $photo_array;
-	}
-	
-	/**
-	 * Returns base uri for gallery files.
-	 * 
-	 * @return string
-	 */
-	public function getBaseUri() {
-		return Environment::getHttpRequest()->url->baseUrl . '/files/gallery';
 	}
 	
 }

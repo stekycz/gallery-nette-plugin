@@ -7,20 +7,20 @@
 class HomepagePresenter extends BasePresenter {
 
 	public function actionDefault() {
-		GalleryControl::create($this, 'galleries', new Gallery(), 'Homepage:gallery');
+		GroupControl::create($this, 'galleries', new GalleryEnvironment('files/gallery', 'thumbnails'), 'Homepage:gallery');
 	}
 	
 	public function actionGallery($id) {
-		PhotoControl::create($this, 'photos', new Photo(), $id);
+		ItemControl::create($this, 'photos', new GalleryEnvironment('files/gallery', 'thumbnails'), $id);
 	}
 	
 	public function actionAdminList() {
-		GalleryControl::create($this, 'galleries', new Gallery(), 'Homepage:adminGallery', 'Homepage:editGallery')
+		GroupControl::create($this, 'galleries', new GalleryEnvironment('files/gallery', 'thumbnails'), 'Homepage:adminGallery', 'Homepage:editGallery')
 			->setAdmin(true);
 	}
 	
 	public function actionAdminGallery($id) {
-		PhotoControl::create($this, 'photos', new Photo(), $id)
+		ItemControl::create($this, 'photos', new GalleryEnvironment('files/gallery', 'thumbnails'), $id)
 			->setAdmin(true);
 	}
 	
