@@ -170,7 +170,7 @@ class Photo extends AbstractItem {
 	 * 
 	 * @param int $id
 	 * @param bool $admin
-	 * @return DibiResult
+	 * @return array
 	 */
 	public function getByGallery($id, $admin = false) {
 		$photo_array = dibi::fetchAll('
@@ -178,8 +178,10 @@ class Photo extends AbstractItem {
 				tgp.photo_id,
 				tgp.is_active,
 				tgp.gallery_id,
-				tgp.filename
+				tgp.filename,
+				tgpe.title
 			FROM gallery_photo AS tgp
+			LEFT JOIN gallery_photo_extended AS tgpe ON (tgpe.photo_id = tgp.photo_id)
 			WHERE tgp.gallery_id = %s', $id, '
 				%SQL', (!$admin ? 'AND tgp.is_active = 1' : ''), '
 			ORDER BY tgp.ordering

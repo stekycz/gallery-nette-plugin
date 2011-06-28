@@ -74,7 +74,7 @@ class Group extends AbstractGroup {
 	 * invisible groups too.
 	 * 
 	 * @param bool $admin
-	 * @return DibiResult
+	 * @return array
 	 */
 	public function getAll($admin = false) {
 		$gallery_array = dibi::fetchAll('
