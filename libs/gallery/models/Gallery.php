@@ -35,11 +35,11 @@ class Gallery extends Object implements IGallery {
 			LIMIT 1
 		');
 		
-		$is_active = $is_active ? 0 : 1;
+		$is_active = $is_active ? false : true;
 		
 		dibi::query('
 			UPDATE gallery
-			SET is_active = %s', $is_active, '
+			SET is_active = %b', $is_active, '
 			WHERE gallery_id = %s', $id, '
 		');
 		
