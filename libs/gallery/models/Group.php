@@ -70,8 +70,8 @@ class Group extends AbstractGroup {
 	}
 	
 	/**
-	 * Returns all galleries which are not deleted. If admin is true returns 
-	 * invisible galleries too.
+	 * Returns all groups which are not deleted. If admin is true returns 
+	 * invisible groups too.
 	 * 
 	 * @param bool $admin
 	 * @return DibiResult
@@ -85,11 +85,15 @@ class Group extends AbstractGroup {
 				tge.description,
 				(
 					SELECT tgp.filename FROM gallery_photo AS tgp
-					WHERE tgp.gallery_id = tg.gallery_id AND tgp.is_active = 1
+					WHERE tgp.gallery_id = tg.gallery_id %SQL', (!$admin ? 'AND tgp.is_active = 1' : ''), '
 					ORDER BY tgp.ordering ASC
 					LIMIT 1
 				) AS title_filename,
-				(SELECT COUNT(*) FROM gallery_photo AS tgp WHERE tgp.is_active = 1) AS photo_count
+				(
+					SELECT COUNT(*)
+					FROM gallery_photo AS tgp
+					WHERE tgp.gallery_id = tg.gallery_id %SQL', (!$admin ? 'AND tgp.is_active = 1' : ''), '
+				) AS photo_count
 			FROM gallery AS tg
 			LEFT JOIN gallery_extended AS tge ON (tge.gallery_id = tg.gallery_id)
 			%SQL', (!$admin ? 'WHERE tg.is_active = 1' : ''), '
