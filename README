@@ -13,7 +13,11 @@ Note: Database layer can be replaced in model.
 
 == Installation ==
 
-1) Copy all files into folder with your project (libs).
+1a) Copy all files into folder with your project (libs).
+
+1b) If you want to add more columns you have to add it into *_extended table.
+    Basic table is for basic data only. Plugin is sensitive to basic table
+    structure.
 
 2) Install all database tables into your database. If it is needed change model.
 
