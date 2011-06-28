@@ -66,7 +66,28 @@ class Photo extends AbstractItem {
 	 * @param int $id Photo ID
 	 */
 	protected function deleteFile($id) {
-		throw new NotImplementedException();
+		$result = dibi::fetchAll('
+			SELECT tgp.filename, tgp.gallery_id
+			FROM gallery_photo AS tgp
+			WHERE tgp.photo_id = %s', $id, '
+			LIMIT 1
+		');
+		
+		if (!$result) {
+			throw new InvalidArgumentException('Photo with ID [' . $id . '] was not found.');
+		}
+		$filename = $result[0]['filename'];
+		$gallery_id = $result[0]['gallery_id'];
+		
+		$filepath_thumbnails = $this->environment->basePath . '/' . $gallery_id . '/' . $this->environment->thumbnailsDirName . '/' . $filename;
+		$filepath_regular = $this->environment->basePath . '/' . $gallery_id . '/' . $filename;
+		
+		if (file_exists($filepath_thumbnails) && is_file($filepath_thumbnails)) {
+			unlink($filepath_thumbnails);
+		}
+		if (file_exists($filepath_regular) && is_file($filepath_regular)) {
+			unlink($filepath_regular);
+		}
 	}
 	
 	/**
