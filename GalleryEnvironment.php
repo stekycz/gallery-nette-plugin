@@ -7,6 +7,30 @@
 class GalleryEnvironment extends Object {
 
 	/**
+	 * @var int
+	 */
+	protected $imageQuality = 100;
+	/**
+	 * @var int Maximum size of image in one direction
+	 */
+	protected $imageSize = 640;
+	/**
+	 * @var int
+	 */
+	protected $thumbnailWidth = 120;
+	/**
+	 * @var int
+	 */
+	protected $thumbnailHeight = 90;
+	/**
+	 * @var string
+	 */
+	protected $formFilesKey = 'photos';
+	/**
+	 * @var string
+	 */
+	protected $fileKey = 'file';
+	/**
 	 * @var string Path to full files
 	 */
 	protected $basePath;
@@ -25,16 +49,7 @@ class GalleryEnvironment extends Object {
 		$this->basePath = $basePath;
 		$this->thumbnailsDirName = $thumbnailsDirName;
 	}
-	
-	public function getBasePath() {
-		return $this->basePath;
-	}
 
-	public function getThumbnailsDirName() {
-		return $this->thumbnailsDirName;
-	}
-
-		
 	/**
 	 * Returns model for items;
 	 * 
@@ -43,7 +58,7 @@ class GalleryEnvironment extends Object {
 	public function getItemModel() {
 		return Photo::getInstance($this);
 	}
-	
+
 	/**
 	 * Returns model for groups.
 	 * 
@@ -52,5 +67,37 @@ class GalleryEnvironment extends Object {
 	public function getGroupModel() {
 		return Group::getInstance($this);
 	}
-
+	
+	public function getBasePath() {
+		return $this->basePath;
+	}
+	
+	public function getFileKey() {
+		return $this->fileKey;
+	}
+	
+	public function getFormFilesKey() {
+		return $this->formFilesKey;
+	}
+	
+	public function getImageQuality() {
+		return $this->imageQuality;
+	}
+	
+	public function getImageSize() {
+		return $this->imageSize;
+	}
+	
+	public function getThumbnailHeight() {
+		return $this->thumbnailHeight;
+	}
+	
+	public function getThumbnailWidth() {
+		return $this->thumbnailWidth;
+	}
+	
+	public function getThumbnailsDirName() {
+		return $this->thumbnailsDirName;
+	}
+	
 }
