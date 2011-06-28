@@ -15,7 +15,7 @@ DROP TABLE IF EXISTS `gallery_extended`;
 CREATE TABLE `gallery_extended` (
   `gallery_id` int(10) unsigned NOT NULL,
   `title` varchar(50) NOT NULL,
-  `description` text NOT NULL,
+  `description` varchar(255) NOT NULL DEFAULT '',
   UNIQUE KEY `gallery_id` (`gallery_id`),
   CONSTRAINT `gallery_extended_ibfk_2` FOREIGN KEY (`gallery_id`) REFERENCES `gallery` (`gallery_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
