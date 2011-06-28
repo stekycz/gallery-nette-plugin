@@ -163,7 +163,20 @@ class Group extends AbstractGroup {
 	 * @param int $id Gallery ID
 	 */
 	protected function deleteFolder($id) {
-		throw new NotImplementedException();
+		$photos = $this->environment->itemModel->getByGallery($id, true);
+		foreach ($photos as $photo) {
+			$this->environment->getItemModel()->delete($photo['photo_id']);
+		}
+		
+		$regular_dir_path = $this->environment->basePath . '/' . $id;
+		$thumbnails_dir_path = $this->environment->basePath . '/' . $id . '/' . $this->environment->thumbnailsDirName;
+		// Thumbnail folder is in regular -> must be deleted first
+		if (is_dir($thumbnails_dir_path)) {
+			rmdir($thumbnails_dir_path);
+		}
+		if (is_dir($regular_dir_path)) {
+			rmdir($regular_dir_path);
+		}
 	}
 
 	/**
