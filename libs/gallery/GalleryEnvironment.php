@@ -7,38 +7,34 @@
 class GalleryEnvironment extends Object {
 
 	/**
-	 * @var string Uri to full files
-	 */
-	protected $baseUri;
-	/**
 	 * @var string Path to full files
 	 */
 	protected $basePath;
 	/**
-	 * @var string Uri to thumbnails
-	 */
-	protected $thumbnailsUri;
-	/**
 	 * @var string Path to thumbnails
 	 */
-	protected $thumbnailsPath;
+	protected $thumbnailsDirName;
 
 	/**
-	 * Creates new instance of gallery environment. Given uri/path must be 
-	 * relative to WWW_DIR/$baseUri.
+	 * Creates new instance of gallery environment. Given paths must be absolute.
 	 * 
-	 * @param string $baseUri Uri to full files
 	 * @param string $basePath Path to full files
-	 * @param string $thumbnailsUri Uri to thumbnails
-	 * @param string $thumbnailsPath Path to thumbnails
+	 * @param string $thumbnailsDirName Thumbnails directory name
 	 */
-	function __construct($baseUri, $thumbnailsUri, $basePath = null, $thumbnailsPath = null) {
-		$this->baseUri = $baseUri;
-		$this->thumbnailsUri = $thumbnailsUri;
-		$this->basePath = $basePath ?: $baseUri;
-		$this->thumbnailsPath = $thumbnailsPath ?: $thumbnailsUri;
+	function __construct($basePath, $thumbnailsDirName) {
+		$this->basePath = $basePath;
+		$this->thumbnailsDirName = $thumbnailsDirName;
 	}
 	
+	public function getBasePath() {
+		return $this->basePath;
+	}
+
+	public function getThumbnailsDirName() {
+		return $this->thumbnailsDirName;
+	}
+
+		
 	/**
 	 * Returns model for items;
 	 * 
@@ -49,7 +45,7 @@ class GalleryEnvironment extends Object {
 	}
 	
 	/**
-	 * Returns model for galleries.
+	 * Returns model for groups.
 	 * 
 	 * @return AbstractGroup
 	 */
