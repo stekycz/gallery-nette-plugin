@@ -5,16 +5,18 @@
  * @since 2011-06-26
  */
 abstract class AbstractGroup extends AbstractGalleryModel {
-	
+
+	/**
+	 * @var array Names of columns which are required
+	 */
 	protected static $basicColumns = array(
 		'gallery_id', 'is_active',
 	);
-	
 	/**
 	 * @var AbstractGroup
 	 */
 	private static $instance = null;
-	
+
 	/**
 	 * Returns instance.
 	 * 
@@ -28,7 +30,21 @@ abstract class AbstractGroup extends AbstractGalleryModel {
 		}
 		return self::$instance;
 	}
-	
+
+	/**
+	 * Returns all groups which are not deleted. If admin is true returns 
+	 * invisible groups too.
+	 * 
+	 * @param bool $admin
+	 * @return array
+	 */
 	abstract public function getAll($admin = false);
-	
+
+	/**
+	 * Returns information for gallery by given id.
+	 * 
+	 * @param int $id
+	 * @return array|bool
+	 */
+	abstract public function getById($id);
 }

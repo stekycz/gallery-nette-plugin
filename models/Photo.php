@@ -6,11 +6,6 @@
  */
 class Photo extends AbstractItem {
 
-	/**
-	 * Creates new photo.
-	 * 
-	 * @param array $data
-	 */
 	public function create(array $data) {
 		$insert_data = array(
 			'is_active' => true,
@@ -140,11 +135,6 @@ class Photo extends AbstractItem {
 		dibi::query('INSERT INTO gallery_photo_extended %v', $extended_data, '');
 	}
 
-	/**
-	 * Toggles activity/visibility of photo.
-	 * 
-	 * @param int $id Photo ID
-	 */
 	public function toggleActive($id) {
 		dibi::begin();
 
@@ -166,11 +156,6 @@ class Photo extends AbstractItem {
 		dibi::commit();
 	}
 
-	/**
-	 * Deletes photo.
-	 * 
-	 * @param int $id Photo ID
-	 */
 	public function delete($id) {
 		$this->deleteFile($id);
 
@@ -209,12 +194,7 @@ class Photo extends AbstractItem {
 			unlink($filepath_regular);
 		}
 	}
-
-	/**
-	 * Changes ordering of file to left.
-	 * 
-	 * @param int $id Photo ID 
-	 */
+	
 	public function moveLeft($id) {
 		$left_id = dibi::fetchSingle('
 			SELECT tgp.photo_id
@@ -232,11 +212,6 @@ class Photo extends AbstractItem {
 		$this->swapPhotos($id, $left_id);
 	}
 
-	/**
-	 * Changes ordering of file to right.
-	 * 
-	 * @param int $id Photo ID 
-	 */
 	public function moveRight($id) {
 		$right_id = dibi::fetchSingle('
 			SELECT tgp.photo_id
@@ -284,14 +259,6 @@ class Photo extends AbstractItem {
 		dibi::commit();
 	}
 
-	/**
-	 * Returns all photos in gallery. If admin is true 
-	 * returns invisible photos too.
-	 * 
-	 * @param int $id
-	 * @param bool $admin
-	 * @return array
-	 */
 	public function getByGallery($id, $admin = false) {
 		$photo_array = dibi::fetchAll('
 			SELECT
@@ -309,12 +276,6 @@ class Photo extends AbstractItem {
 		return $photo_array;
 	}
 
-	/**
-	 * Returns information for photo by given id.
-	 * 
-	 * @param int $id
-	 * @return array
-	 */
 	public function getById($id) {
 		return dibi::fetch('
 			SELECT tgp.photo_id, tgp.is_active, tgpe.title

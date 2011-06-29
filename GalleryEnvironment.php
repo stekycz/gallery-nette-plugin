@@ -7,7 +7,7 @@
 class GalleryEnvironment extends Object {
 
 	/**
-	 * @var int
+	 * @var int Quality of resized images
 	 */
 	protected $imageQuality = 100;
 	/**
@@ -15,19 +15,19 @@ class GalleryEnvironment extends Object {
 	 */
 	protected $imageSize = 640;
 	/**
-	 * @var int
+	 * @var int Maximum width of thumbnail image
 	 */
 	protected $thumbnailWidth = 120;
 	/**
-	 * @var int
+	 * @var int Maximum height of thumbnail image
 	 */
 	protected $thumbnailHeight = 90;
 	/**
-	 * @var string
+	 * @var string Key for photos in array from which is created/updated group
 	 */
 	protected $formFilesKey = 'photos';
 	/**
-	 * @var string
+	 * @var string Key for photo in array from which is created/updated item
 	 */
 	protected $fileKey = 'file';
 	/**

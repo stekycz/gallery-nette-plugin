@@ -6,11 +6,6 @@
  */
 class Group extends AbstractGroup {
 
-	/**
-	 * Creates new group.
-	 * 
-	 * @param array $data
-	 */
 	public function create(array $data) {
 		$insert_data = array(
 			'is_active' => true,
@@ -117,11 +112,6 @@ class Group extends AbstractGroup {
 		dibi::query('INSERT INTO gallery_extended %v', $extended_data, '');
 	}
 
-	/**
-	 * Toggles activity/visibility of group.
-	 * 
-	 * @param int $id Gallery ID
-	 */
 	public function toggleActive($id) {
 		dibi::begin();
 
@@ -143,11 +133,6 @@ class Group extends AbstractGroup {
 		dibi::commit();
 	}
 
-	/**
-	 * Deletes group.
-	 * 
-	 * @param int $id Gallery ID
-	 */
 	public function delete($id) {
 		$this->deleteFolder($id);
 
@@ -179,13 +164,6 @@ class Group extends AbstractGroup {
 		}
 	}
 
-	/**
-	 * Returns all groups which are not deleted. If admin is true returns 
-	 * invisible groups too.
-	 * 
-	 * @param bool $admin
-	 * @return array
-	 */
 	public function getAll($admin = false) {
 		$gallery_array = dibi::fetchAll('
 			SELECT
@@ -212,12 +190,6 @@ class Group extends AbstractGroup {
 		return $gallery_array;
 	}
 	
-	/**
-	 * Returns information for gallery by given id.
-	 * 
-	 * @param int $id
-	 * @return array
-	 */
 	public function getById($id) {
 		return dibi::fetch('
 			SELECT tg.gallery_id, tg.is_active, tge.title, tge.description
