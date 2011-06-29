@@ -14,13 +14,18 @@ but recomanded.
 
 == Installation ==
 
-1a) Copy all files into folder with your project (libs).
+1) Copy all files into folder with your project (libs).
 
-1b) If you want to add more columns you have to add it into *_extended table.
+2a) Install all database tables into your database. If it is needed change model.
+	Default database structure is in /model/mysql.sql
+
+2b) If you want to add more columns you have to add it into *_extended table.
     Basic table is for basic data only. Plugin is sensitive to basic table
     structure.
 
-2) Install all database tables into your database. If it is needed change model.
+3) Create service for GalleryEnvironment.
+
+4) Configure your gallery environment.
 
 == Notes ==
 In example templates is used fancybox javascript library for photogalleries and 
