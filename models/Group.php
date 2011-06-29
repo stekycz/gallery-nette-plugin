@@ -150,7 +150,7 @@ class Group extends AbstractGroup {
 	protected function deleteFolder($id) {
 		$photos = $this->environment->itemModel->getByGallery($id, true);
 		foreach ($photos as $photo) {
-			$this->environment->getItemModel()->delete($photo['photo_id']);
+			$this->environment->itemModel->delete($photo['photo_id']);
 		}
 		
 		$regular_dir_path = $this->environment->basePath . '/' . $id;

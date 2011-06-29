@@ -4,7 +4,7 @@
  * @author Martin Štekl <martin.stekl@gmail.com>
  * @since 2011-06-28
  */
-class GalleryEnvironment extends Object {
+class GalleryEnvironment extends DiContainer {
 
 	/**
 	 * @var int Quality of resized images
@@ -35,69 +35,32 @@ class GalleryEnvironment extends Object {
 	 */
 	protected $basePath;
 	/**
-	 * @var string Path to thumbnails
+	 * @var string Name for directory with thumbnails in each gallery
 	 */
-	protected $thumbnailsDirName;
+	protected $thumbnailsDirName = 'thumbnails';
 
 	/**
 	 * Creates new instance of gallery environment. Given paths must be absolute.
 	 * 
 	 * @param string $basePath Path to full files
-	 * @param string $thumbnailsDirName Thumbnails directory name
 	 */
-	function __construct($basePath, $thumbnailsDirName) {
-		$this->basePath = $basePath;
-		$this->thumbnailsDirName = $thumbnailsDirName;
+	public function __construct() {
+		// Must be here
+		$this->basePath = WWW_DIR . '/gallery';
 	}
 
-	/**
-	 * Returns model for items;
-	 * 
-	 * @return AbstractItem
-	 */
-	public function getItemModel() {
-		return Photo::getInstance($this);
+	public function __set($name, $value) {
+		if ($this->getReflection()->hasProperty($name)) {
+			return $this->{$name} = $value;
+		}
+		return parent::__set($name, $value);
 	}
 
-	/**
-	 * Returns model for groups.
-	 * 
-	 * @return AbstractGroup
-	 */
-	public function getGroupModel() {
-		return Group::getInstance($this);
+	public function &__get($name) {
+		if ($this->getReflection()->hasProperty($name)) {
+			return $this->{$name};
+		}
+		return parent::__get($name);
 	}
-	
-	public function getBasePath() {
-		return $this->basePath;
-	}
-	
-	public function getFileKey() {
-		return $this->fileKey;
-	}
-	
-	public function getFormFilesKey() {
-		return $this->formFilesKey;
-	}
-	
-	public function getImageQuality() {
-		return $this->imageQuality;
-	}
-	
-	public function getImageSize() {
-		return $this->imageSize;
-	}
-	
-	public function getThumbnailHeight() {
-		return $this->thumbnailHeight;
-	}
-	
-	public function getThumbnailWidth() {
-		return $this->thumbnailWidth;
-	}
-	
-	public function getThumbnailsDirName() {
-		return $this->thumbnailsDirName;
-	}
-	
+
 }
