@@ -40,13 +40,65 @@ class GalleryEnvironment extends DiContainer {
 	protected $thumbnailsDirName = 'thumbnails';
 
 	/**
-	 * Creates new instance of gallery environment. Given paths must be absolute.
+	 * Creates new instance of gallery environment.
 	 * 
-	 * @param string $basePath Path to full files
+	 * @param array $params Parameters for service
 	 */
-	public function __construct() {
+	public function __construct($params) {
 		// Must be here
 		$this->basePath = WWW_DIR . '/gallery';
+		
+		if (array_key_exists('gallery', $params)) {
+			$this->configure($params['gallery']);
+			$this->createModelServices($params['gallery']);
+		}
+	}
+	
+	/**
+	 * Creates new instance from given context.
+	 * 
+	 * This should be used for addService only!
+	 * 
+	 * @param DiContainer $args Application context
+	 * @return GalleryEnvironment
+	 */
+	public static function getInstance(DiContainer $args) {
+		return new self($args->params);
+	}
+	
+	/**
+	 * Configure environment from given parameters.
+	 * 
+	 * @param array $params
+	 */
+	protected function configure($params) {
+		foreach ($this->getReflection()->getProperties() as $property) {
+			$name = $property->getName();
+			if (array_key_exists($name, $params)) {
+				$this->{$name} = $params[$name];
+			}
+		}
+	}
+	
+	/**
+	 * Creates model services from given configuration or default.
+	 * 
+	 * @param array $params
+	 */
+	protected function createModelServices($params) {
+		// Add Item Model service
+		if (array_key_exists('itemModel', $params)) {
+			$this->addService('itemModel', $params['itemModel']::getInstance($this));
+		} else {
+			$this->addService('itemModel', Photo::getInstance($this));
+		}
+		
+		// Add Group Model service
+		if (array_key_exists('groupModel', $params)) {
+			$this->addService('groupModel', $params['groupModel']::getInstance($this));
+		} else {
+			$this->addService('groupModel', Group::getInstance($this));
+		}
 	}
 
 	public function __set($name, $value) {
