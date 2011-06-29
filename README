@@ -23,9 +23,15 @@ but recomanded.
     Basic table is for basic data only. Plugin is sensitive to basic table
     structure.
 
-3) Create service for GalleryEnvironment.
+3) Create service for GalleryEnvironment. The easiest way is add service in startup
+   function in your BasePresenter.
+   To create service "gallery" write this:
+   
+   $this->context->addService('gallery', 'GalleryEnvironment::getInstance');
+   
+   Note: "gallery" in config.neon is fixed label, service name can be changed.
 
-4) Configure your gallery environment.
+4) Configure your gallery environment in config.neon.
 
 == Notes ==
 In example templates is used fancybox javascript library for photogalleries and 
