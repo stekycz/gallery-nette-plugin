@@ -14,6 +14,14 @@ abstract class AbstractGalleryControl extends Control {
 	 * @var GalleryEnvironment
 	 */
 	protected $environment;
+	/**
+	 * @var string Path to file with component template
+	 */
+	protected $templateFile;
+	/**
+	 * @var string Name of snippet in template
+	 */
+	protected $snippetName;
 	
 	/**
 	 * @param ComponentContainer $parent
@@ -33,5 +41,35 @@ abstract class AbstractGalleryControl extends Control {
 		$this->isAdmin = $admin;
 		return $this;
 	}
+	
+	/**
+	 * Setups template file and snippet name if is filled.
+	 * 
+	 * @param string $templateFile
+	 * @param string $snippetName
+	 */
+	public function setupTemplate($templateFile, $snippetName = null) {
+		$this->templateFile = $templateFile;
+		if ($snippetName !== null) {
+			$this->snippetName = $snippetName;
+		}
+	}
+
+	/**
+	 * Renders control.
+	 */
+	abstract public function render();
+	
+	/**
+	 * Toggles activity/visibility.
+	 * 
+	 * @param int $id
+	 */
+	abstract public function handleToggleActive($id);
+	
+	/**
+	 * @param int $id
+	 */
+	abstract public function handleDelete($id);
 	
 }

@@ -20,6 +20,8 @@ class ItemControl extends AbstractGalleryControl {
 	public function __construct(ComponentContainer $parent, $name, GalleryEnvironment $environment, $group_id) {
 		parent::__construct($parent, $name, $environment);
 		$this->group_id = $group_id;
+		$this->templateFile = dirname(__FILE__) . '/items.latte';
+		$this->snippetName = 'item-table';
 	}
 	
 	/**
@@ -35,36 +37,23 @@ class ItemControl extends AbstractGalleryControl {
 		return new self($parent, $name, $environment, $group_id);
 	}
 	
-	/**
-	 * Renders item list.
-	 */
 	public function render() {
 		$this->template->isAdmin = $this->isAdmin;
 		$this->template->items = $this->environment->itemModel->getByGallery($this->group_id, $this->isAdmin);
-		$this->template->setFile(dirname(__FILE__) . '/items.latte');
+		$this->template->setFile($this->templateFile);
 		$this->template->render();
 	}
 	
-	/**
-	 * Toggles activity/visibility of item.
-	 * 
-	 * @param int $id
-	 */
 	public function handleToggleActive($id) {
-		$this->template->setFile(dirname(__FILE__) . '/items.latte');
+		$this->template->setFile($this->templateFile);
 		$this->environment->itemModel->toggleActive($id);
-		$this->invalidateControl('item-table');
+		$this->invalidateControl($this->snippetName);
 	}
 
-	/**
-	 * Deletes file.
-	 * 
-	 * @param int $id
-	 */
 	public function handleDelete($id) {
-		$this->template->setFile(dirname(__FILE__) . '/items.latte');
+		$this->template->setFile($this->templateFile);
 		$this->environment->itemModel->delete($id);
-		$this->invalidateControl('item-table');
+		$this->invalidateControl($this->snippetName);
 	}
 	
 	/**
@@ -73,9 +62,9 @@ class ItemControl extends AbstractGalleryControl {
 	 * @param int $id
 	 */
 	public function handleMoveLeft($id) {
-		$this->template->setFile(dirname(__FILE__) . '/items.latte');
+		$this->template->setFile($this->templateFile);
 		$this->environment->itemModel->moveLeft($id);
-		$this->invalidateControl('item-table');
+		$this->invalidateControl($this->snippetName);
 	}
 
 	/**
@@ -84,9 +73,9 @@ class ItemControl extends AbstractGalleryControl {
 	 * @param int $id
 	 */
 	public function handleMoveRight($id) {
-		$this->template->setFile(dirname(__FILE__) . '/items.latte');
+		$this->template->setFile($this->templateFile);
 		$this->environment->itemModel->moveRight($id);
-		$this->invalidateControl('item-table');
+		$this->invalidateControl($this->snippetName);
 	}
 	
 }

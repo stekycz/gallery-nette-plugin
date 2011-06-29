@@ -26,6 +26,8 @@ class GroupControl extends AbstractGalleryControl {
 		parent::__construct($parent, $name, $environment);
 		$this->actionViewItems = $actionViewItems;
 		$this->actionEditGroup = $actionEditGroup;
+		$this->templateFile = dirname(__FILE__) . '/groups.latte';
+		$this->snippetName = 'group-table';
 	}
 
 	/**
@@ -52,39 +54,26 @@ class GroupControl extends AbstractGalleryControl {
 		}
 		return parent::setAdmin($admin);
 	}
-
-	/**
-	 * Renders group list.
-	 */
+	
 	public function render() {
 		$this->template->actionViewItems = $this->actionViewItems;
 		$this->template->actionEditGroup = $this->actionEditGroup;
 		$this->template->isAdmin = $this->isAdmin;
 		$this->template->groups = $this->environment->groupModel->getAll($this->isAdmin);
-		$this->template->setFile(dirname(__FILE__) . '/groups.latte');
+		$this->template->setFile($this->templateFile);
 		$this->template->render();
 	}
 
-	/**
-	 * Toggles activity/visibility of group.
-	 * 
-	 * @param int $id Gallery ID
-	 */
 	public function handleToggleActive($id) {
-		$this->template->setFile(dirname(__FILE__) . '/groups.latte');
+		$this->template->setFile($this->templateFile);
 		$this->environment->groupModel->toggleActive($id);
-		$this->invalidateControl('group-table');
+		$this->invalidateControl($this->snippetName);
 	}
 
-	/**
-	 * Deletes group.
-	 * 
-	 * @param int $id Gallery ID
-	 */
 	public function handleDelete($id) {
-		$this->template->setFile(dirname(__FILE__) . '/groups.latte');
+		$this->template->setFile($this->templateFile);
 		$this->environment->groupModel->delete($id);
-		$this->invalidateControl('group-table');
+		$this->invalidateControl($this->snippetName);
 	}
 
 }
