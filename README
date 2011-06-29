@@ -4,7 +4,7 @@ Author: Martin Štekl <martin.stekl@gmail.com>
 == Description ==
 Plugin helps to create galleries of photos. (In code there it is called groups and items.)
 
-This is built for PHP 5.2 and based on Nette Framerwork.
+This is built for PHP 5.2+ and based on Nette Framerwork 2.0.
 
 == Dependencies ==
 It depends on Nette Framework, dibi and MultipleFileUploader (Nette Plugin).
