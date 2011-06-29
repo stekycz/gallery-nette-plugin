@@ -7,9 +7,10 @@ Plugin helps to create galleries of photos. (In code there it is called groups a
 This is built for PHP 5.2 and based on Nette Framerwork.
 
 == Dependencies ==
-It depends on Nette, dibi and MultipleFileUploader (Nette Plugin).
+It depends on Nette Framework, dibi and MultipleFileUploader (Nette Plugin).
 
-Note: Database layer can be replaced in model.
+Note: Database layer can be replaced in model. MultipleFileUploader is optional
+but recomanded.
 
 == Installation ==
 
