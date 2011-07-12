@@ -163,8 +163,24 @@ class Group extends AbstractGroup {
 			rmdir($regular_dir_path);
 		}
 	}
+	
+	public function getCount($admin = false) {
+		return dibi::fetchSingle('
+			SELECT COUNT(*)
+			FROM gallery AS tg
+			WHERE (
+				SELECT COUNT(*)
+				FROM gallery_photo AS tgp
+				WHERE tgp.gallery_id = tg.gallery_id %SQL', (!$admin ? 'AND tgp.is_active = 1' : ''), '
+			) > 0
+			%SQL', (!$admin ? 'AND tg.is_active = 1' : ''), '
+		');
+	}
 
-	public function getAll($admin = false) {
+	public function getAll($page = 1, $itemPerPage = 25, $admin = false) {
+		$limit = $itemPerPage;
+		$offset = ($page - 1) * $itemPerPage;
+		
 		$gallery_array = dibi::fetchAll('
 			SELECT
 				tg.gallery_id,
@@ -186,6 +202,7 @@ class Group extends AbstractGroup {
 			LEFT JOIN gallery_extended AS tge ON (tge.gallery_id = tg.gallery_id)
 			%SQL', (!$admin ? 'WHERE tg.is_active = 1' : ''), '
 			HAVING photo_count > 0
+			%lmt', $limit, ' %ofs', $offset, '
 		');
 		return $gallery_array;
 	}

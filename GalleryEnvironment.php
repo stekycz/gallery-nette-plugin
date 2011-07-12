@@ -31,6 +31,11 @@ class GalleryEnvironment extends DiContainer {
 	 */
 	protected $fileKey = 'file';
 	/**
+	 * @var int Groups per page
+	 */
+	protected $groupsPerPage = 25;
+		
+	/**
 	 * @var string Path to full files
 	 */
 	protected $basePath;

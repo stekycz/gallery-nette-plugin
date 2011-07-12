@@ -8,6 +8,8 @@ This is built for PHP 5.2+ and based on Nette Framerwork 2.0.
 
 == Dependencies ==
 It depends on Nette Framework, dibi and MultipleFileUploader (Nette Plugin).
+VisualPaginator Nette Plugin is also required for paging. If you want to use
+your own implementation of paginator you have to change one line in code.
 
 Note: Database layer can be replaced in model. MultipleFileUploader is optional
 but recomanded.

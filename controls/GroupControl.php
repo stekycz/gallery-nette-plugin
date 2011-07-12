@@ -59,7 +59,11 @@ class GroupControl extends AbstractGalleryControl {
 		$this->template->actionViewItems = $this->actionViewItems;
 		$this->template->actionEditGroup = $this->actionEditGroup;
 		$this->template->isAdmin = $this->isAdmin;
-		$this->template->groups = $this->environment->groupModel->getAll($this->isAdmin);
+		
+		$paginator = $this['paginator']->getPaginator();
+		
+		$this->template->groups = $this->environment->groupModel
+			->getAll($paginator->page, $paginator->itemsPerPage, $this->isAdmin);
 		$this->template->setFile($this->templateFile);
 		$this->template->render();
 	}
@@ -74,6 +78,14 @@ class GroupControl extends AbstractGalleryControl {
 		$this->template->setFile($this->templateFile);
 		$this->environment->groupModel->delete($id);
 		$this->invalidateControl($this->snippetName);
+	}
+	
+	public function createComponentPaginator() {
+		$vp = new VisualPaginator($this, 'paginator');
+		$paginator = $vp->getPaginator();
+		$paginator->itemsPerPage = $this->environment->groupsPerPage;
+		$paginator->itemCount = $this->environment->groupModel->getCount($this->isAdmin);
+		return $vp;
 	}
 
 }
