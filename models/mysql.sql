@@ -6,8 +6,10 @@ SET sql_mode = 'NO_AUTO_VALUE_ON_ZERO';
 DROP TABLE IF EXISTS `gallery`;
 CREATE TABLE `gallery` (
   `gallery_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `namespace` varchar(50) DEFAULT NULL,
   `is_active` bit(1) NOT NULL DEFAULT b'1',
-  PRIMARY KEY (`gallery_id`)
+  PRIMARY KEY (`gallery_id`),
+  KEY `namespace` (`namespace`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 

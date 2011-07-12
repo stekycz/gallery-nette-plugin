@@ -16,6 +16,12 @@ abstract class AbstractGroup extends AbstractGalleryModel {
 	 * @var AbstractGroup
 	 */
 	private static $instance = null;
+	/**
+	 * If namespace is not set default root folder is used for saving groups.
+	 * 
+	 * @var string Namespace for groups
+	 */
+	protected $namespace = null;
 
 	/**
 	 * Returns instance.
@@ -29,6 +35,24 @@ abstract class AbstractGroup extends AbstractGalleryModel {
 			self::$instance = new $called_class($environment);
 		}
 		return self::$instance;
+	}
+	
+	/**
+	 * Setup namespace for current model. If directory for namespace does not
+	 * exists creates it.
+	 * 
+	 * @param string $namsespace 
+	 * @return AbstractGroup Fluent interface
+	 */
+	public function useNamespace($namsespace) {
+		$this->namespace = $namsespace;
+		
+		$dir_path = $this->environment->basePath . '/' . $this->namespace;
+		if (!file_exists($dir_path)) {
+			mkdir($dir_path, 0777, true);
+		}
+		
+		return $this;
 	}
 
 	/**

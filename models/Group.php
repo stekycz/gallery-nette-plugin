@@ -21,6 +21,10 @@ class Group extends AbstractGroup {
 				$extended_data[$key] = $value;
 			}
 		}
+		
+		if ($this->namespace !== null) {
+			$insert_data['namespace'] = $this->namespace;
+		}
 
 		dibi::begin();
 
@@ -86,8 +90,14 @@ class Group extends AbstractGroup {
 	 * @param int $gallery_id
 	 */
 	protected function insertFiles(array $files, $gallery_id) {
+		if ($this->namespace !== null) {
+			$basePath = $this->environment->basePath . '/' . $this->namespace;
+		} else {
+			$basePath = $this->environment->basePath;
+		}
+		
 		// For future thumbnails
-		$thumbnails_dir_path = $this->environment->basePath . '/' . $gallery_id . '/' . $this->environment->thumbnailsDirName;
+		$thumbnails_dir_path = $basePath . '/' . $gallery_id . '/' . $this->environment->thumbnailsDirName;
 		if (!file_exists($thumbnails_dir_path)) {
 			mkdir($thumbnails_dir_path, 0777, true);
 		}
@@ -95,6 +105,11 @@ class Group extends AbstractGroup {
 		$files_data = array(
 			'gallery_id' => $gallery_id,
 		);
+		
+		if ($this->namespace !== null) {
+			$files_data['namespace'] = $this->namespace;
+		}
+		
 		foreach ($files as $file) {
 			$files_data[$this->environment->fileKey] = $file;
 			$this->environment->itemModel->create($files_data);
@@ -153,8 +168,17 @@ class Group extends AbstractGroup {
 			$this->environment->itemModel->delete($photo['photo_id']);
 		}
 		
-		$regular_dir_path = $this->environment->basePath . '/' . $id;
-		$thumbnails_dir_path = $this->environment->basePath . '/' . $id . '/' . $this->environment->thumbnailsDirName;
+		$gallery = $this->environment->groupModel->getById($id);
+		$namespace = $gallery['namespace'];
+		
+		if ($namespace !== null) {
+			$basePath = $this->environment->basePath . '/' . $namespace;
+		} else {
+			$basePath = $this->environment->basePath;
+		}
+		
+		$regular_dir_path = $basePath . '/' . $id;
+		$thumbnails_dir_path = $basePath . '/' . $id . '/' . $this->environment->thumbnailsDirName;
 		// Thumbnail folder is in regular -> must be deleted first
 		if (is_dir($thumbnails_dir_path)) {
 			rmdir($thumbnails_dir_path);
@@ -173,6 +197,10 @@ class Group extends AbstractGroup {
 				FROM gallery_photo AS tgp
 				WHERE tgp.gallery_id = tg.gallery_id %SQL', (!$admin ? 'AND tgp.is_active = 1' : ''), '
 			) > 0
+			%sql', ($this->namespace
+						? array('AND tg.namespace = %s', $this->namespace)
+						: 'AND tg.namespace IS NULL'
+			), '
 			%SQL', (!$admin ? 'AND tg.is_active = 1' : ''), '
 		');
 	}
@@ -184,6 +212,7 @@ class Group extends AbstractGroup {
 		$gallery_array = dibi::fetchAll('
 			SELECT
 				tg.gallery_id,
+				tg.namespace,
 				tg.is_active,
 				tge.title,
 				tge.description,
@@ -200,7 +229,11 @@ class Group extends AbstractGroup {
 				) AS photo_count
 			FROM gallery AS tg
 			LEFT JOIN gallery_extended AS tge ON (tge.gallery_id = tg.gallery_id)
-			%SQL', (!$admin ? 'WHERE tg.is_active = 1' : ''), '
+			WHERE %sql', ($this->namespace
+						? array('tg.namespace = %s', $this->namespace)
+						: 'tg.namespace IS NULL'
+			), '
+			%SQL', (!$admin ? 'AND tg.is_active = 1' : ''), '
 			HAVING photo_count > 0
 			%lmt', $limit, ' %ofs', $offset, '
 		');
@@ -209,7 +242,7 @@ class Group extends AbstractGroup {
 	
 	public function getById($id) {
 		return dibi::fetch('
-			SELECT tg.gallery_id, tg.is_active, tge.title, tge.description
+			SELECT tg.gallery_id, tg.namespace, tg.is_active, tge.title, tge.description
 			FROM gallery AS tg
 			LEFT JOIN gallery_extended AS tge ON (tge.gallery_id = tg.gallery_id)
 			WHERE tg.gallery_id = %s', $id, '

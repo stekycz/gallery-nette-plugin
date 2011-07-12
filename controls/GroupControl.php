@@ -14,6 +14,12 @@ class GroupControl extends AbstractGalleryControl {
 	 * @var string Action which allows to edit group
 	 */
 	protected $actionEditGroup = null;
+	/**
+	 * If namespace is not set default root folder is used.
+	 * 
+	 * @var string Namespace for groups
+	 */
+	protected $namespace = null;
 
 	/**
 	 * @param ComponentContainer $parent
@@ -55,12 +61,32 @@ class GroupControl extends AbstractGalleryControl {
 		return parent::setAdmin($admin);
 	}
 	
+	/**
+	 * Setup namespace for current control.
+	 * 
+	 * @param string $namsespace 
+	 * @return GroupControl Fluent interface
+	 */
+	public function useNamespace($namespace) {
+		if (!in_array($namespace, (array) $this->environment->namespaces)) {
+			throw new InvalidArgumentException('Namespace [' . $namespace . '] is not defined in configuration.');
+		}
+		
+		$this->namespace = $namespace;		
+		return $this;
+	}
+	
 	public function render() {
 		$this->template->actionViewItems = $this->actionViewItems;
 		$this->template->actionEditGroup = $this->actionEditGroup;
 		$this->template->isAdmin = $this->isAdmin;
+		$this->template->namespace = $this->namespace;
 		
 		$paginator = $this['paginator']->getPaginator();
+		
+		if ($this->namespace) {
+			$this->environment->groupModel->useNamespace($this->namespace);
+		}
 		
 		$this->template->groups = $this->environment->groupModel
 			->getAll($paginator->page, $paginator->itemsPerPage, $this->isAdmin);

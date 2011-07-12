@@ -43,6 +43,10 @@ class GalleryEnvironment extends DiContainer {
 	 * @var string Name for directory with thumbnails in each gallery
 	 */
 	protected $thumbnailsDirName = 'thumbnails';
+	/**
+	 * @var array List of namespaces
+	 */
+	protected $namespaces = array();
 
 	/**
 	 * Creates new instance of gallery environment.

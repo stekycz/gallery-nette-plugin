@@ -39,6 +39,10 @@ class ItemControl extends AbstractGalleryControl {
 	
 	public function render() {
 		$this->template->isAdmin = $this->isAdmin;
+		
+		$gallery = $this->environment->groupModel->getById($this->group_id);
+		$this->template->namespace = $gallery['namespace'];
+		
 		$this->template->items = $this->environment->itemModel->getByGallery($this->group_id, $this->isAdmin);
 		$this->template->setFile($this->templateFile);
 		$this->template->render();

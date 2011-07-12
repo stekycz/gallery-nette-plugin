@@ -17,7 +17,7 @@ class Photo extends AbstractItem {
 				unset($data[$key]);
 			} elseif (in_array($key, self::$basicColumns)) {
 				$insert_data[$key] = $value;
-			} elseif ($key != $this->environment->fileKey) {
+			} elseif ($key != $this->environment->fileKey && $key != 'namespace') {
 				$extended_data[$key] = $value;
 			}
 		}
@@ -26,11 +26,17 @@ class Photo extends AbstractItem {
 		if (!$file->isImage()) {
 			throw new InvalidArgumentException('Given file is not image. It is [' . $file->getContentType() . '].');
 		}
+		
+		if (isset($data['namespace'])) {
+			$basePath = $this->environment->basePath . '/' . $data['namespace'];
+		} else {
+			$basePath = $this->environment->basePath;
+		}
 
 		// Save image
 		$extension = $this->detectExtension($file);
 		$filename = sha1($file->name) . '.' . $extension;
-		$filepath = $this->environment->basePath . '/' . $data['gallery_id'] . '/' . $filename;
+		$filepath = $basePath . '/' . $data['gallery_id'] . '/' . $filename;
 		$file->move($filepath);
 		$image = $file->toImage();
 		
@@ -45,7 +51,7 @@ class Photo extends AbstractItem {
 		if ($top > 0 || $left > 0) {
 			$image->crop($left > 0 ? $left : 0, $top > 0 ? $top : 0, $this->environment->thumbnailWidth, $this->environment->thumbnailHeight);
 		}
-		$image->save($this->environment->basePath . '/' . $data['gallery_id'] . '/' . $this->environment->thumbnailsDirName . '/' . $filename);
+		$image->save($basePath . '/' . $data['gallery_id'] . '/' . $this->environment->thumbnailsDirName . '/' . $filename);
 
 		// Counted values
 		$insert_data['filename'] = $filename;
@@ -172,8 +178,9 @@ class Photo extends AbstractItem {
 	 */
 	protected function deleteFile($id) {
 		$result = dibi::fetchAll('
-			SELECT tgp.filename, tgp.gallery_id
+			SELECT tgp.filename, tgp.gallery_id, tg.namespace
 			FROM gallery_photo AS tgp
+			LEFT JOIN gallery AS tg ON (tg.gallery_id = tgp.gallery_id)
 			WHERE tgp.photo_id = %s', $id, '
 			LIMIT 1
 		');
@@ -183,9 +190,16 @@ class Photo extends AbstractItem {
 		}
 		$filename = $result[0]['filename'];
 		$gallery_id = $result[0]['gallery_id'];
+		$namespace = $result[0]['namespace'];
+		
+		if ($namespace !== null) {
+			$basePath = $this->environment->basePath . '/' . $namespace;
+		} else {
+			$basePath = $this->environment->basePath;
+		}
 
-		$filepath_thumbnails = $this->environment->basePath . '/' . $gallery_id . '/' . $this->environment->thumbnailsDirName . '/' . $filename;
-		$filepath_regular = $this->environment->basePath . '/' . $gallery_id . '/' . $filename;
+		$filepath_thumbnails = $basePath . '/' . $gallery_id . '/' . $this->environment->thumbnailsDirName . '/' . $filename;
+		$filepath_regular = $basePath . '/' . $gallery_id . '/' . $filename;
 
 		if (file_exists($filepath_thumbnails) && is_file($filepath_thumbnails)) {
 			unlink($filepath_thumbnails);
