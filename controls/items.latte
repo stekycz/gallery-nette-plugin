@@ -1,7 +1,7 @@
 {*
  * @param array $items
+ * @param array $gallery
  * @param bool $isAdmin
- * @param string $namespace
  *}
 
 {if $items}
@@ -17,6 +17,10 @@
 		});
 	});
 </script>
+
+<h2>{$gallery['title']}</h2>
+
+<p>{$gallery['description']}</p>
 
 {snippet item-table}
 <table class="items">
@@ -35,8 +39,8 @@
 		<tr>
 				{/if}
 			<td>
-				<a href="{$baseUri}/files/gallery/{if $namespace}{$namespace}/{/if}{$item['gallery_id']}/{$item['filename']}" title="{$item['title']}" rel="group-{$item['gallery_id']}">
-					<img class="thumbnail" src="{$baseUri}/files/gallery/{if $namespace}{$namespace}/{/if}{$item['gallery_id']}/thumbnails/{$item['filename']}" alt="" />
+				<a href="{$baseUri}/files/gallery/{if $gallery['namespace']}{$gallery['namespace']}/{/if}{$item['gallery_id']}/{$item['filename']}" title="{$item['title']}" rel="group-{$item['gallery_id']}">
+					<img class="thumbnail" src="{$baseUri}/files/gallery/{if $gallery['namespace']}{$gallery['namespace']}/{/if}{$item['gallery_id']}/thumbnails/{$item['filename']}" alt="" />
 				</a>
 				{if $isAdmin}
 				<span class="actions">
