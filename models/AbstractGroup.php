@@ -32,13 +32,22 @@ abstract class AbstractGroup extends AbstractGalleryModel {
 	}
 
 	/**
+	 * Returns count of groups which are not deleted. If admin is true counts 
+	 * invisible groups too.
+	 * 
+	 * @param bool $admin
+	 * @return array
+	 */
+	abstract public function getCount($admin = false);
+	
+	/**
 	 * Returns all groups which are not deleted. If admin is true returns 
 	 * invisible groups too.
 	 * 
 	 * @param bool $admin
 	 * @return array
 	 */
-	abstract public function getAll($admin = false);
+	abstract public function getAll($page = 1, $itemPerPage = 25, $admin = false);
 
 	/**
 	 * Returns information for gallery by given id.
