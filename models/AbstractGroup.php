@@ -47,13 +47,37 @@ abstract class AbstractGroup extends AbstractGalleryModel {
 	public function useNamespace($namsespace) {
 		$this->namespace = $namsespace;
 		
-		$dir_path = $this->environment->basePath . '/' . $this->namespace;
+		$dir_path = $this->getPathNamespace();
 		if (!file_exists($dir_path)) {
 			mkdir($dir_path, 0777, true);
 		}
 		
 		return $this;
 	}
+	
+	/**
+	 * Returns path to namespace folder. If namespace is not used 
+	 * basePath is returned.
+	 * 
+	 * @return string Path to folder
+	 */
+	abstract public function getPathNamespace();
+	
+	/**
+	 * Returns path to gallery folder. Gallery is define by ID.
+	 * 
+	 * @param int $id Gallery ID
+	 * @return string Path to folder
+	 */
+	abstract public function getPathGallery($id);
+	
+	/**
+	 * Returns path to gallery thumbnails folder. Gallery is define by ID.
+	 * 
+	 * @param int $id Gallery ID
+	 * @return string Path to folder
+	 */
+	abstract public function getPathThumbnails($id);
 
 	/**
 	 * Returns count of groups which are not deleted. If admin is true counts 

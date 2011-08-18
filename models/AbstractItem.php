@@ -32,6 +32,24 @@ abstract class AbstractItem extends AbstractGalleryModel {
 	}
 
 	/**
+	 * Returns path to image. Gallery is define by ID.
+	 * 
+	 * @param int $id Gallery ID
+	 * @param string $filename Filename
+	 * @return string Path to image
+	 */
+	abstract public function getPathImage($id, $filename);
+	
+	/**
+	 * Returns path to photo thumbnail image. Gallery is define by ID.
+	 * 
+	 * @param int $id Gallery ID
+	 * @param string $filename Filename
+	 * @return string Path to thumbnail image
+	 */
+	abstract public function getPathThumbnail($id, $filename);
+	
+	/**
 	 * Changes ordering of file to left.
 	 * 
 	 * @param int $id Photo ID 

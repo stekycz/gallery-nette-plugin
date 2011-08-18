@@ -90,14 +90,8 @@ class Group extends AbstractGroup {
 	 * @param int $gallery_id
 	 */
 	protected function insertFiles(array $files, $gallery_id) {
-		if ($this->namespace !== null) {
-			$basePath = $this->environment->basePath . '/' . $this->namespace;
-		} else {
-			$basePath = $this->environment->basePath;
-		}
-		
 		// For future thumbnails
-		$thumbnails_dir_path = $basePath . '/' . $gallery_id . '/' . $this->environment->thumbnailsDirName;
+		$thumbnails_dir_path = $this->getPathThumbnails($gallery_id);
 		if (!file_exists($thumbnails_dir_path)) {
 			mkdir($thumbnails_dir_path, 0777, true);
 		}
@@ -171,14 +165,8 @@ class Group extends AbstractGroup {
 		$gallery = $this->environment->groupModel->getById($id);
 		$namespace = $gallery['namespace'];
 		
-		if ($namespace !== null) {
-			$basePath = $this->environment->basePath . '/' . $namespace;
-		} else {
-			$basePath = $this->environment->basePath;
-		}
-		
-		$regular_dir_path = $basePath . '/' . $id;
-		$thumbnails_dir_path = $basePath . '/' . $id . '/' . $this->environment->thumbnailsDirName;
+		$regular_dir_path = $this->getPathGallery($id);
+		$thumbnails_dir_path = $this->getPathThumbnails($id);
 		// Thumbnail folder is in regular -> must be deleted first
 		if (is_dir($thumbnails_dir_path)) {
 			rmdir($thumbnails_dir_path);
@@ -186,6 +174,22 @@ class Group extends AbstractGroup {
 		if (is_dir($regular_dir_path)) {
 			rmdir($regular_dir_path);
 		}
+	}
+	
+	public function getPathNamespace() {
+		if ($this->namespace === null) {
+			return $this->environment->basePath;
+		} else {
+			return $this->environment->basePath . '/' . $this->namespace;
+		}
+	}
+	
+	public function getPathGallery($id) {
+		return $this->getPathNamespace() . '/' . $id;
+	}
+	
+	public function getPathThumbnails($id) {
+		return $this->getPathGallery($id) . '/' . $this->environment->thumbnailsDirName;
 	}
 	
 	public function getCount($admin = false) {

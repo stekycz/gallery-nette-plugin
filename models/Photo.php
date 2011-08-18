@@ -26,17 +26,11 @@ class Photo extends AbstractItem {
 		if (!$file->isImage()) {
 			throw new InvalidArgumentException('Given file is not image. It is [' . $file->getContentType() . '].');
 		}
-		
-		if (isset($data['namespace'])) {
-			$basePath = $this->environment->basePath . '/' . $data['namespace'];
-		} else {
-			$basePath = $this->environment->basePath;
-		}
 
 		// Save image
 		$extension = $this->detectExtension($file);
 		$filename = sha1($file->name) . '.' . $extension;
-		$filepath = $basePath . '/' . $data['gallery_id'] . '/' . $filename;
+		$filepath = $this->getPathImage($data['gallery_id'], $filename);
 		$file->move($filepath);
 		$image = $file->toImage();
 		
@@ -51,7 +45,7 @@ class Photo extends AbstractItem {
 		if ($top > 0 || $left > 0) {
 			$image->crop($left > 0 ? $left : 0, $top > 0 ? $top : 0, $this->environment->thumbnailWidth, $this->environment->thumbnailHeight);
 		}
-		$image->save($basePath . '/' . $data['gallery_id'] . '/' . $this->environment->thumbnailsDirName . '/' . $filename);
+		$image->save($this->getPathThumbnail($data['gallery_id'], $filename));
 
 		// Counted values
 		$insert_data['filename'] = $filename;
@@ -130,6 +124,14 @@ class Photo extends AbstractItem {
 		}
 	}
 	
+	public function getPathImage($id, $filename) {
+		return $this->environment->groupModel->getPathGallery($id) . '/' . $filename;
+	}
+	
+	public function getPathThumbnail($id, $filename) {
+		return $this->environment->groupModel->getPathThumbnails($id) . '/' . $filename;
+	}
+	
 	/**
 	 * Inserts extended data about photo into database.
 	 * 
@@ -198,8 +200,8 @@ class Photo extends AbstractItem {
 			$basePath = $this->environment->basePath;
 		}
 
-		$filepath_thumbnails = $basePath . '/' . $gallery_id . '/' . $this->environment->thumbnailsDirName . '/' . $filename;
-		$filepath_regular = $basePath . '/' . $gallery_id . '/' . $filename;
+		$filepath_thumbnails = $this->getPathThumbnail($gallery_id, $filename);
+		$filepath_regular = $this->getPathImage($gallery_id, $filename);
 
 		if (file_exists($filepath_thumbnails) && is_file($filepath_thumbnails)) {
 			unlink($filepath_thumbnails);
