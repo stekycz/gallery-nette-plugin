@@ -70,14 +70,6 @@ abstract class AbstractGroup extends AbstractGalleryModel {
 	 * @return string Path to folder
 	 */
 	abstract public function getPathGallery($id);
-	
-	/**
-	 * Returns path to gallery thumbnails folder. Gallery is define by ID.
-	 * 
-	 * @param int $id Gallery ID
-	 * @return string Path to folder
-	 */
-	abstract public function getPathThumbnails($id);
 
 	/**
 	 * Returns count of groups which are not deleted. If admin is true counts 

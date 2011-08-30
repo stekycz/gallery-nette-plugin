@@ -39,9 +39,8 @@
 		<tr>
 				{/if}
 			<td>
-				<a href="{$baseUri}/files/gallery/{if $gallery['namespace']}{$gallery['namespace']}/{/if}{$item['gallery_id']}/{$item['filename']}" title="{$item['title']}" rel="group-{$item['gallery_id']}">
-					<img class="thumbnail" src="{$baseUri}/files/gallery/{if $gallery['namespace']}{$gallery['namespace']}/{/if}{$item['gallery_id']}/thumbnails/{$item['filename']}" alt="" />
-				</a>
+				{? $image_path = 'files/gallery/' . ($gallery['namespace'] ? $gallery['namespace'].'/' : '') . $item['gallery_id'].'/'.$item['filename']}
+				{$image_path|gallery:$item['title']:$item['title']:'group-'.$item['gallery_id']}
 				{if $isAdmin}
 				<span class="actions">
 				{if !$iterator->isFirst()}

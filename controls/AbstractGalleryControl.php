@@ -42,6 +42,13 @@ abstract class AbstractGalleryControl extends Control {
 		return $this;
 	}
 	
+	protected function createTemplate() {
+		$template = parent::createTemplate();
+		$template->registerHelper('resize', 'ImageHelper::resize');
+		$template->registerHelper('gallery', 'ImageHelper::gallery');
+		return $template;
+	}
+
 	/**
 	 * Setups template file and snippet name if is filled.
 	 * 

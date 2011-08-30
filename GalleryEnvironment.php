@@ -7,22 +7,6 @@
 class GalleryEnvironment extends DiContainer {
 
 	/**
-	 * @var int Quality of resized images
-	 */
-	protected $imageQuality = 100;
-	/**
-	 * @var int Maximum size of image in one direction
-	 */
-	protected $imageSize = 640;
-	/**
-	 * @var int Maximum width of thumbnail image
-	 */
-	protected $thumbnailWidth = 120;
-	/**
-	 * @var int Maximum height of thumbnail image
-	 */
-	protected $thumbnailHeight = 90;
-	/**
 	 * @var string Key for photos in array from which is created/updated group
 	 */
 	protected $formFilesKey = 'photos';
@@ -39,10 +23,6 @@ class GalleryEnvironment extends DiContainer {
 	 * @var string Path to full files
 	 */
 	protected $basePath;
-	/**
-	 * @var string Name for directory with thumbnails in each gallery
-	 */
-	protected $thumbnailsDirName = 'thumbnails';
 	/**
 	 * @var array List of namespaces
 	 */

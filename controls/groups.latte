@@ -25,7 +25,8 @@
 				{/if}
 			<td title="{$group['description']} ({$group['photo_count']} fotek)">
 				<a href="{plink $actionViewItems, id => $group['gallery_id']}">
-					<img class="thumbnail" src="{$baseUri}/files/gallery/{if $namespace}{$namespace}/{/if}{$group['gallery_id']}/thumbnails/{$group['title_filename']}" alt="" />
+					{? $image_path = 'files/gallery/' . ($namespace ? $namespace.'/' : '') . $group['gallery_id'].'/'.$group['title_filename']}
+					{$image_path|resize:'120x90'}
 					<span>{$group['title']}</span>
 				</a>
 				{if $isAdmin}

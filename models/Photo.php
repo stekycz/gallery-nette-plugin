@@ -32,27 +32,13 @@ class Photo extends AbstractItem {
 		$filename = sha1($file->name) . '.' . $extension;
 		$filepath = $this->getPathImage($data['gallery_id'], $filename);
 		$file->move($filepath);
-		$image = $file->toImage();
-		
-		// Make it smaller
-		$image->resize($this->environment->imageSize, $this->environment->imageSize);
-		$image->save($filepath, $this->environment->imageQuality);
-
-		// Make thumbnail
-		$image->resize($this->environment->thumbnailWidth, $this->environment->thumbnailWidth, Image::FILL);
-		$top = ($image->getHeight() - $this->environment->thumbnailHeight) / 2;
-		$left = ($image->getWidth() - $this->environment->thumbnailWidth) / 2;
-		if ($top > 0 || $left > 0) {
-			$image->crop($left > 0 ? $left : 0, $top > 0 ? $top : 0, $this->environment->thumbnailWidth, $this->environment->thumbnailHeight);
-		}
-		$image->save($this->getPathThumbnail($data['gallery_id'], $filename));
 
 		// Counted values
 		$insert_data['filename'] = $filename;
 		$insert_data['ordering'] = 1 + (int) dibi::fetchSingle('
 			SELECT MAX(tgp.ordering) FROM gallery_photo AS tgp WHERE tgp.gallery_id = %s', $data['gallery_id'], '
 		');
-		
+
 		// Database save
 		dibi::begin();
 
@@ -75,7 +61,7 @@ class Photo extends AbstractItem {
 		if (!array_key_exists('photo_id', $data)) {
 			throw new InvalidArgumentException('Given data do not contain photo_id.');
 		}
-		
+
 		$photo_id = $data['photo_id'];
 		$previous_data = $this->getById($photo_id);
 		$extended_data = array();
@@ -87,7 +73,7 @@ class Photo extends AbstractItem {
 				}
 			}
 		}
-		
+
 		// Database save
 		dibi::begin();
 
@@ -123,15 +109,11 @@ class Photo extends AbstractItem {
 				throw new InvalidArgumentException('Given file [' . $content_type . '] is not supported image type.');
 		}
 	}
-	
+
 	public function getPathImage($id, $filename) {
 		return $this->environment->groupModel->getPathGallery($id) . '/' . $filename;
 	}
-	
-	public function getPathThumbnail($id, $filename) {
-		return $this->environment->groupModel->getPathThumbnails($id) . '/' . $filename;
-	}
-	
+
 	/**
 	 * Inserts extended data about photo into database.
 	 * 
@@ -179,7 +161,7 @@ class Photo extends AbstractItem {
 	 * @param int $id Photo ID
 	 */
 	protected function deleteFile($id) {
-		$result = dibi::fetchAll('
+		$result = dibi::fetch('
 			SELECT tgp.filename, tgp.gallery_id, tg.namespace
 			FROM gallery_photo AS tgp
 			LEFT JOIN gallery AS tg ON (tg.gallery_id = tgp.gallery_id)
@@ -190,27 +172,23 @@ class Photo extends AbstractItem {
 		if (!$result) {
 			throw new InvalidArgumentException('Photo with ID [' . $id . '] was not found.');
 		}
-		$filename = $result[0]['filename'];
-		$gallery_id = $result[0]['gallery_id'];
-		$namespace = $result[0]['namespace'];
-		
+		$filename = $result['filename'];
+		$gallery_id = $result['gallery_id'];
+		$namespace = $result['namespace'];
+
 		if ($namespace !== null) {
 			$basePath = $this->environment->basePath . '/' . $namespace;
 		} else {
 			$basePath = $this->environment->basePath;
 		}
 
-		$filepath_thumbnails = $this->getPathThumbnail($gallery_id, $filename);
 		$filepath_regular = $this->getPathImage($gallery_id, $filename);
 
-		if (file_exists($filepath_thumbnails) && is_file($filepath_thumbnails)) {
-			unlink($filepath_thumbnails);
-		}
 		if (file_exists($filepath_regular) && is_file($filepath_regular)) {
 			unlink($filepath_regular);
 		}
 	}
-	
+
 	public function moveLeft($id) {
 		$left_id = dibi::fetchSingle('
 			SELECT tgp.photo_id
@@ -301,5 +279,5 @@ class Photo extends AbstractItem {
 			LIMIT 1
 		');
 	}
-	
+
 }

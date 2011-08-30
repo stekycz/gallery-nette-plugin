@@ -90,12 +90,6 @@ class Group extends AbstractGroup {
 	 * @param int $gallery_id
 	 */
 	protected function insertFiles(array $files, $gallery_id) {
-		// For future thumbnails
-		$thumbnails_dir_path = $this->getPathThumbnails($gallery_id);
-		if (!file_exists($thumbnails_dir_path)) {
-			mkdir($thumbnails_dir_path, 0777, true);
-		}
-		
 		$files_data = array(
 			'gallery_id' => $gallery_id,
 		);
@@ -166,11 +160,6 @@ class Group extends AbstractGroup {
 		$namespace = $gallery['namespace'];
 		
 		$regular_dir_path = $this->getPathGallery($id);
-		$thumbnails_dir_path = $this->getPathThumbnails($id);
-		// Thumbnail folder is in regular -> must be deleted first
-		if (is_dir($thumbnails_dir_path)) {
-			rmdir($thumbnails_dir_path);
-		}
 		if (is_dir($regular_dir_path)) {
 			rmdir($regular_dir_path);
 		}
@@ -186,10 +175,6 @@ class Group extends AbstractGroup {
 	
 	public function getPathGallery($id) {
 		return $this->getPathNamespace() . '/' . $id;
-	}
-	
-	public function getPathThumbnails($id) {
-		return $this->getPathGallery($id) . '/' . $this->environment->thumbnailsDirName;
 	}
 	
 	public function getCount($admin = false) {
