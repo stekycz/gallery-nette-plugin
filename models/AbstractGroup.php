@@ -6,6 +6,8 @@
  */
 abstract class AbstractGroup extends AbstractGalleryModel {
 
+	const DEFAULT_NAMESPACE_ID = 1;
+	
 	/**
 	 * @var array Names of columns which are required
 	 */
@@ -21,7 +23,7 @@ abstract class AbstractGroup extends AbstractGalleryModel {
 	 * 
 	 * @var string Namespace for groups
 	 */
-	protected $namespace = null;
+	protected $namespace_id = self::DEFAULT_NAMESPACE_ID;
 
 	/**
 	 * Returns instance.
@@ -41,11 +43,11 @@ abstract class AbstractGroup extends AbstractGalleryModel {
 	 * Setup namespace for current model. If directory for namespace does not
 	 * exists creates it.
 	 * 
-	 * @param string $namsespace 
+	 * @param int $namespace_id
 	 * @return AbstractGroup Fluent interface
 	 */
-	public function useNamespace($namsespace) {
-		$this->namespace = $namsespace;
+	public function useNamespace($namsespace_id) {
+		$this->namespace_id = $namsespace_id;
 		
 		$dir_path = $this->getPathNamespace();
 		if (!file_exists($dir_path)) {

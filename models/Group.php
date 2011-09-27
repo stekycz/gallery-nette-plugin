@@ -9,31 +9,30 @@ class Group extends AbstractGroup {
 	public function create(array $data) {
 		$insert_data = array(
 			'is_active' => true,
+			'namespace_id' => self::DEFAULT_NAMESPACE_ID,
 		);
-		$extended_data = array();
 
 		foreach ($data as $key => $value) {
 			if (!$value) {
 				unset($data[$key]);
-			} elseif (in_array($key, self::$basicColumns)) {
-				$insert_data[$key] = $value;
 			} elseif ($key != $this->environment->formFilesKey) {
-				$extended_data[$key] = $value;
+				$insert_data[$key] = $value;
 			}
 		}
 		
-		if ($this->namespace !== null) {
-			$insert_data['namespace'] = $this->namespace;
+		/* @var $difference array */
+		if (!($difference = array_diff(self::$basicColumns, array_keys($insert_data)))) {
+			throw new InvalidStateException('Missing required fields ['.implode(', ', $difference).'].');
+		}
+		
+		if ($this->namespace_id != self::DEFAULT_NAMESPACE_ID) {
+			$insert_data['namespace_id'] = $this->namespace_id;
 		}
 
 		dibi::begin();
 
 		dibi::query('INSERT INTO gallery %v', $insert_data, '');
 		$gallery_id = dibi::insertId();
-
-		if ($extended_data) {
-			$this->insertExtendedData($extended_data, $gallery_id);
-		}
 		
 		if (isset($data[$this->environment->formFilesKey])) {
 			$this->insertFiles($data[$this->environment->formFilesKey], $gallery_id);
@@ -57,23 +56,18 @@ class Group extends AbstractGroup {
 		
 		$gallery_id = $data['gallery_id'];
 		$previous_data = $this->getById($gallery_id);
-		$extended_data = array();
-
+		$update_data = array();
+		
 		foreach ($data as $key => $value) {
 			if ($key != $this->environment->formFilesKey && $previous_data[$key] != $value) {
-				if (!in_array($key, self::$basicColumns)) {
-					$extended_data[$key] = $value;
-				}
+				$update_data[$key] = $value;
 			}
 		}
 
 		dibi::begin();
-
-		$previous_extended_exists = dibi::fetch('SELECT 1 FROM gallery_extended WHERE gallery_id = %s', $gallery_id, '');
-		if ($previous_extended_exists && $extended_data) {
-			dibi::query('UPDATE gallery_extended SET', $extended_data, 'WHERE gallery_id = %s', $gallery_id);
-		} elseif (!$previous_extended_exists && $extended_data) {
-			$this->insertExtendedData($extended_data, $gallery_id);
+		
+		if ($update_data) {
+			dibi::query('UPDATE gallery SET ', $update_data, 'WHERE gallery_id = %s', $gallery_id);
 		}
 		
 		if (isset($data[$this->environment->formFilesKey])) {
@@ -94,25 +88,10 @@ class Group extends AbstractGroup {
 			'gallery_id' => $gallery_id,
 		);
 		
-		if ($this->namespace !== null) {
-			$files_data['namespace'] = $this->namespace;
-		}
-		
 		foreach ($files as $file) {
 			$files_data[$this->environment->fileKey] = $file;
 			$this->environment->itemModel->create($files_data);
 		}
-	}
-	
-	/**
-	 * Inserts extended data about gallery into database.
-	 * 
-	 * @param array $extended_data
-	 * @param int $gallery_id
-	 */
-	protected function insertExtendedData(array $extended_data, $gallery_id) {
-		$extended_data['gallery_id'] = $gallery_id;
-		dibi::query('INSERT INTO gallery_extended %v', $extended_data, '');
 	}
 
 	public function toggleActive($id) {
@@ -157,7 +136,7 @@ class Group extends AbstractGroup {
 		}
 		
 		$gallery = $this->environment->groupModel->getById($id);
-		$namespace = $gallery['namespace'];
+		$namespace_id = $gallery['namespace_id'];
 		
 		$regular_dir_path = $this->getPathGallery($id);
 		if (is_dir($regular_dir_path)) {
@@ -166,11 +145,16 @@ class Group extends AbstractGroup {
 	}
 	
 	public function getPathNamespace() {
-		if ($this->namespace === null) {
+		if ($this->namespace_id === self::DEFAULT_NAMESPACE_ID) {
 			return $this->environment->basePath;
 		} else {
-			return $this->environment->basePath . '/' . $this->namespace;
+			return $this->environment->basePath . '/' . $this->getCurrentNamespaceName();
 		}
+	}
+	
+	protected function getCurrentNamespaceName() {
+		$namespaces = $this->environment->namespaces;
+		return $namespaces[$this->namespace_id];
 	}
 	
 	public function getPathGallery($id) {
@@ -186,10 +170,7 @@ class Group extends AbstractGroup {
 				FROM gallery_photo AS tgp
 				WHERE tgp.gallery_id = tg.gallery_id %SQL', (!$admin ? 'AND tgp.is_active = 1' : ''), '
 			) > 0
-			%sql', ($this->namespace
-						? array('AND tg.namespace = %s', $this->namespace)
-						: 'AND tg.namespace IS NULL'
-			), '
+			%sql', array('AND tg.namespace_id = %s', $this->namespace_id), '
 			%SQL', (!$admin ? 'AND tg.is_active = 1' : ''), '
 		');
 	}
@@ -201,10 +182,11 @@ class Group extends AbstractGroup {
 		$gallery_array = dibi::fetchAll('
 			SELECT
 				tg.gallery_id,
-				tg.namespace,
+				tg.namespace_id,
+				tgn.name AS namespace,
 				tg.is_active,
-				tge.title,
-				tge.description,
+				tg.title,
+				tg.description,
 				(
 					SELECT tgp.filename FROM gallery_photo AS tgp
 					WHERE tgp.gallery_id = tg.gallery_id %SQL', (!$admin ? 'AND tgp.is_active = 1' : ''), '
@@ -217,11 +199,8 @@ class Group extends AbstractGroup {
 					WHERE tgp.gallery_id = tg.gallery_id %SQL', (!$admin ? 'AND tgp.is_active = 1' : ''), '
 				) AS photo_count
 			FROM gallery AS tg
-			LEFT JOIN gallery_extended AS tge ON (tge.gallery_id = tg.gallery_id)
-			WHERE %sql', ($this->namespace
-						? array('tg.namespace = %s', $this->namespace)
-						: 'tg.namespace IS NULL'
-			), '
+			LEFT JOIN gallery_namespace AS tgn ON (tgn.namespace_id = tg.namespace_id)
+			WHERE %sql', array('tg.namespace_id = %s', $this->namespace_id), '
 			%SQL', (!$admin ? 'AND tg.is_active = 1' : ''), '
 			HAVING photo_count > 0
 			%lmt', $limit, ' %ofs', $offset, '
@@ -231,9 +210,11 @@ class Group extends AbstractGroup {
 	
 	public function getById($id) {
 		return dibi::fetch('
-			SELECT tg.gallery_id, tg.namespace, tg.is_active, tge.title, tge.description
+			SELECT
+				tg.gallery_id, tg.namespace_id, tg.is_active, tg.title, tg.description,
+				tgn.name AS namespace
 			FROM gallery AS tg
-			LEFT JOIN gallery_extended AS tge ON (tge.gallery_id = tg.gallery_id)
+			LEFT JOIN gallery_namespace AS tgn ON (tgn.namespace_id = tg.namespace_id)
 			WHERE tg.gallery_id = %s', $id, '
 			LIMIT 1
 		');

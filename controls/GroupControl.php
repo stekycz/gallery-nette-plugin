@@ -17,9 +17,9 @@ class GroupControl extends AbstractGalleryControl {
 	/**
 	 * If namespace is not set default root folder is used.
 	 * 
-	 * @var string Namespace for groups
+	 * @var int Namespace for groups
 	 */
-	protected $namespace = null;
+	protected $namespace_id = AbstractGroup::DEFAULT_NAMESPACE_ID;
 
 	/**
 	 * @param ComponentContainer $parent
@@ -64,15 +64,15 @@ class GroupControl extends AbstractGalleryControl {
 	/**
 	 * Setup namespace for current control.
 	 * 
-	 * @param string $namsespace 
+	 * @param string $namsespace_id
 	 * @return GroupControl Fluent interface
 	 */
-	public function useNamespace($namespace) {
-		if (!in_array($namespace, (array) $this->environment->namespaces)) {
-			throw new InvalidArgumentException('Namespace [' . $namespace . '] is not defined in configuration.');
+	public function useNamespace($namespace_id) {
+		if (!in_array($namespace_id, array_keys($this->environment->namespaces))) {
+			throw new InvalidArgumentException('Namespace [' . $namespace_id . '] does not exist.');
 		}
 		
-		$this->namespace = $namespace;		
+		$this->namespace_id = $namespace_id;		
 		return $this;
 	}
 	
@@ -80,12 +80,12 @@ class GroupControl extends AbstractGalleryControl {
 		$this->template->actionViewItems = $this->actionViewItems;
 		$this->template->actionEditGroup = $this->actionEditGroup;
 		$this->template->isAdmin = $this->isAdmin;
-		$this->template->namespace = $this->namespace;
+		$this->template->namespace = $this->environment->namespaces[$this->namespace_id];
 		
 		$paginator = $this['paginator']->getPaginator();
 		
-		if ($this->namespace) {
-			$this->environment->groupModel->useNamespace($this->namespace);
+		if ($this->namespace_id) {
+			$this->environment->groupModel->useNamespace($this->namespace_id);
 		}
 		
 		$this->template->groups = $this->environment->groupModel

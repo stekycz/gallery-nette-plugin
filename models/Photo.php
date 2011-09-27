@@ -10,18 +10,20 @@ class Photo extends AbstractItem {
 		$insert_data = array(
 			'is_active' => true,
 		);
-		$extended_data = array();
 
 		foreach ($data as $key => $value) {
 			if (!$value) {
 				unset($data[$key]);
-			} elseif (in_array($key, self::$basicColumns)) {
+			} elseif ($key != $this->environment->fileKey) {
 				$insert_data[$key] = $value;
-			} elseif ($key != $this->environment->fileKey && $key != 'namespace') {
-				$extended_data[$key] = $value;
 			}
 		}
 
+		/* @var $difference array */
+		if (!($difference = array_diff(self::$basicColumns, array_keys($insert_data)))) {
+			throw new InvalidStateException('Missing required fields ['.implode(', ', $difference).'].');
+		}
+		
 		$file = $data[$this->environment->fileKey];
 		if (!$file->isImage()) {
 			throw new InvalidArgumentException('Given file is not image. It is [' . $file->getContentType() . '].');
@@ -33,21 +35,17 @@ class Photo extends AbstractItem {
 		$filepath = $this->getPathImage($data['gallery_id'], $filename);
 		$file->move($filepath);
 
+		// Database save
+		dibi::begin();
+		
 		// Counted values
 		$insert_data['filename'] = $filename;
 		$insert_data['ordering'] = 1 + (int) dibi::fetchSingle('
 			SELECT MAX(tgp.ordering) FROM gallery_photo AS tgp WHERE tgp.gallery_id = %s', $data['gallery_id'], '
 		');
 
-		// Database save
-		dibi::begin();
-
 		dibi::query('INSERT INTO gallery_photo %v', $insert_data, '');
 		$photo_id = dibi::insertId();
-
-		if ($extended_data) {
-			$this->insertExtendedData($extended_data, $photo_id);
-		}
 
 		dibi::commit();
 	}
@@ -64,24 +62,19 @@ class Photo extends AbstractItem {
 
 		$photo_id = $data['photo_id'];
 		$previous_data = $this->getById($photo_id);
-		$extended_data = array();
+		$update_data = array();
 
 		foreach ($data as $key => $value) {
 			if ($key != $this->environment->fileKey && $previous_data[$key] != $value) {
-				if (!in_array($key, self::$basicColumns)) {
-					$extended_data[$key] = $value;
-				}
+				$update_data[$key] = $value;
 			}
 		}
-
+		
 		// Database save
 		dibi::begin();
 
-		$previous_extended_exists = dibi::fetch('SELECT 1 FROM gallery_photo_extended WHERE photo_id = %s', $photo_id, '');
-		if ($previous_extended_exists && $extended_data) {
-			dibi::query('UPDATE gallery_photo_extended SET', $extended_data, 'WHERE photo_id = %s', $photo_id);
-		} elseif (!$previous_extended_exists && $extended_data) {
-			$this->insertExtendedData($extended_data, $photo_id);
+		if ($update_data) {
+			dibi::query('UPDATE gallery_photo SET', $update_data, 'WHERE photo_id = %s', $photo_id);
 		}
 
 		dibi::commit();
@@ -112,17 +105,6 @@ class Photo extends AbstractItem {
 
 	public function getPathImage($id, $filename) {
 		return $this->environment->groupModel->getPathGallery($id) . '/' . $filename;
-	}
-
-	/**
-	 * Inserts extended data about photo into database.
-	 * 
-	 * @param array $extended_data
-	 * @param int $photo_id
-	 */
-	protected function insertExtendedData(array $extended_data, $photo_id) {
-		$extended_data['photo_id'] = $photo_id;
-		dibi::query('INSERT INTO gallery_photo_extended %v', $extended_data, '');
 	}
 
 	public function toggleActive($id) {
@@ -162,7 +144,7 @@ class Photo extends AbstractItem {
 	 */
 	protected function deleteFile($id) {
 		$result = dibi::fetch('
-			SELECT tgp.filename, tgp.gallery_id, tg.namespace
+			SELECT tgp.filename, tgp.gallery_id
 			FROM gallery_photo AS tgp
 			LEFT JOIN gallery AS tg ON (tg.gallery_id = tgp.gallery_id)
 			WHERE tgp.photo_id = %s', $id, '
@@ -174,13 +156,6 @@ class Photo extends AbstractItem {
 		}
 		$filename = $result['filename'];
 		$gallery_id = $result['gallery_id'];
-		$namespace = $result['namespace'];
-
-		if ($namespace !== null) {
-			$basePath = $this->environment->basePath . '/' . $namespace;
-		} else {
-			$basePath = $this->environment->basePath;
-		}
 
 		$filepath_regular = $this->getPathImage($gallery_id, $filename);
 
@@ -260,9 +235,8 @@ class Photo extends AbstractItem {
 				tgp.is_active,
 				tgp.gallery_id,
 				tgp.filename,
-				tgpe.title
+				tgp.title
 			FROM gallery_photo AS tgp
-			LEFT JOIN gallery_photo_extended AS tgpe ON (tgpe.photo_id = tgp.photo_id)
 			WHERE tgp.gallery_id = %s', $id, '
 				%SQL', (!$admin ? 'AND tgp.is_active = 1' : ''), '
 			ORDER BY tgp.ordering
@@ -272,9 +246,8 @@ class Photo extends AbstractItem {
 
 	public function getById($id) {
 		return dibi::fetch('
-			SELECT tgp.photo_id, tgp.is_active, tgpe.title
+			SELECT tgp.photo_id, tgp.is_active, tgp.title
 			FROM gallery_photo AS tgp
-			LEFT JOIN gallery_photo_extended AS tgpe ON (tgpe.photo_id = tgp.photo_id)
 			WHERE tgp.photo_id = %s', $id, '
 			LIMIT 1
 		');

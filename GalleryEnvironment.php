@@ -23,10 +23,6 @@ class GalleryEnvironment extends DiContainer {
 	 * @var string Path to full files
 	 */
 	protected $basePath;
-	/**
-	 * @var array List of namespaces
-	 */
-	protected $namespaces = array();
 
 	/**
 	 * Creates new instance of gallery environment.
@@ -100,8 +96,23 @@ class GalleryEnvironment extends DiContainer {
 	public function &__get($name) {
 		if ($this->getReflection()->hasProperty($name)) {
 			return $this->{$name};
+		} else if ($name == 'namespaces') {
+			$return = $this->getNamespaces();
+			return $return;
 		}
 		return parent::__get($name);
 	}
 
+	protected function getNamespaces() {
+		static $cache = null;
+		
+		if ($cache === null) {
+			$cache = dibi::fetchPairs('
+				SELECT tgn.namespace_id, tgn.name
+				FROM gallery_namespace AS tgn
+			');
+		}
+		
+		return $cache;
+	}
 }
