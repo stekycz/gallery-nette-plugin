@@ -48,6 +48,8 @@ class Photo extends AbstractItem {
 		$photo_id = dibi::insertId();
 
 		dibi::commit();
+		
+		return $photo_id;
 	}
 
 	/**
@@ -78,6 +80,8 @@ class Photo extends AbstractItem {
 		}
 
 		dibi::commit();
+		
+		return $photo_id;
 	}
 
 	/**

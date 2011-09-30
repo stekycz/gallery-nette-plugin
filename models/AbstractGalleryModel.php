@@ -24,6 +24,7 @@ abstract class AbstractGalleryModel extends Object {
 	 * Creates new group/item from given data.
 	 * 
 	 * @param array $data
+	 * @return int $id
 	 */
 	abstract public function create(array $data);
 	
@@ -31,6 +32,7 @@ abstract class AbstractGalleryModel extends Object {
 	 * Updates data.
 	 * 
 	 * @param array $data
+	 * @return int $id
 	 */
 	abstract public function update(array $data);
 	

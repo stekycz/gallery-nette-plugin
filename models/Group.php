@@ -41,6 +41,8 @@ class Group extends AbstractGroup {
 		}
 
 		dibi::commit();
+		
+		return $gallery_id;
 	}
 
 	/**
@@ -75,6 +77,8 @@ class Group extends AbstractGroup {
 		}
 
 		dibi::commit();
+		
+		return $gallery_id;
 	}
 	
 	/**
