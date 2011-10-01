@@ -33,7 +33,7 @@ class GroupControl extends AbstractGalleryControl {
 		$this->actionViewItems = $actionViewItems;
 		$this->actionEditGroup = $actionEditGroup;
 		$this->templateFile = dirname(__FILE__) . '/groups.latte';
-		$this->snippetName = 'group-table';
+		$this->snippetName = 'groupTable';
 	}
 
 	/**

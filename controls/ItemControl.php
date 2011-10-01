@@ -21,7 +21,7 @@ class ItemControl extends AbstractGalleryControl {
 		parent::__construct($parent, $name, $environment);
 		$this->group_id = $group_id;
 		$this->templateFile = dirname(__FILE__) . '/items.latte';
-		$this->snippetName = 'item-table';
+		$this->snippetName = 'itemTable';
 	}
 	
 	/**
