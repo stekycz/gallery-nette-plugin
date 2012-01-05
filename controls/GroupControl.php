@@ -6,14 +6,18 @@
  */
 class GroupControl extends AbstractGalleryControl {
 
+	const DEFAULT_ITEMS_PER_PAGE = 25;
+	
 	/**
 	 * @var string Action which shows item list
 	 */
 	protected $actionViewItems;
+
 	/**
 	 * @var string Action which allows to edit group
 	 */
 	protected $actionEditGroup = null;
+
 	/**
 	 * If namespace is not set default root folder is used.
 	 * 
@@ -60,7 +64,7 @@ class GroupControl extends AbstractGalleryControl {
 		}
 		return parent::setAdmin($admin);
 	}
-	
+
 	/**
 	 * Setup namespace for current control.
 	 * 
@@ -71,25 +75,26 @@ class GroupControl extends AbstractGalleryControl {
 		if (!in_array($namespace_id, array_keys($this->environment->namespaces))) {
 			throw new InvalidArgumentException('Namespace [' . $namespace_id . '] does not exist.');
 		}
-		
-		$this->namespace_id = $namespace_id;		
+
+		$this->namespace_id = $namespace_id;
 		return $this;
 	}
-	
-	public function render() {
+
+	public function render($groups_per_page = self::DEFAULT_ITEMS_PER_PAGE) {
 		$this->template->actionViewItems = $this->actionViewItems;
 		$this->template->actionEditGroup = $this->actionEditGroup;
 		$this->template->isAdmin = $this->isAdmin;
 		$this->template->namespace = $this->environment->namespaces[$this->namespace_id];
-		
+
 		$paginator = $this['paginator']->getPaginator();
-		
+		$paginator->itemsPerPage = $groups_per_page;
+
 		if ($this->namespace_id) {
 			$this->environment->groupModel->useNamespace($this->namespace_id);
 		}
-		
+
 		$this->template->groups = $this->environment->groupModel
-			->getAll($paginator->page, $paginator->itemsPerPage, $this->isAdmin);
+				->getAll($paginator->page, $paginator->itemsPerPage, $this->isAdmin);
 		$this->template->setFile($this->templateFile);
 		$this->template->render();
 	}
@@ -105,11 +110,11 @@ class GroupControl extends AbstractGalleryControl {
 		$this->environment->groupModel->delete($id);
 		$this->invalidateControl($this->snippetName);
 	}
-	
-	public function createComponentPaginator() {
-		$vp = new VisualPaginator($this, 'paginator');
+
+	public function createComponentPaginator($name) {
+		$vp = new VisualPaginator($this, $name);
 		$paginator = $vp->getPaginator();
-		$paginator->itemsPerPage = $this->environment->groupsPerPage;
+		$paginator->itemsPerPage = static::DEFAULT_ITEMS_PER_PAGE;
 		$paginator->itemCount = $this->environment->groupModel->getCount($this->isAdmin);
 		return $vp;
 	}

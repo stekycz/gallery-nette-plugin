@@ -31,15 +31,15 @@
 				</a>
 				{if $isAdmin}
 				<span class="actions">
-				<a n:href="toggleActive, id => $group['gallery_id']" onclick="return!nette.action(this);" title="Změnit viditelnost">
-					<img src="{$baseUri}/images/{if $group['is_active']}eye.png{else}eye-close.png{/if}" alt="Změnit viditelnost">
-				</a>
-				<a href="{plink $actionEditGroup, id => $group['gallery_id']}" title="Upravit">
-					<img src="{$baseUri}/images/pencil.png" alt="Upravit">
-				</a>
-				<a n:href="delete, id => $group['gallery_id']" onclick="return!nette.action(this);" title="Smazat">
-					<img src="{$baseUri}/images/cross.png" alt="Smazat">
-				</a>
+					<a n:href="toggleActive, id => $group['gallery_id']" onclick="return!nette.action(this);" title="Změnit viditelnost">
+						<img src="{$baseUri}/images/{if $group['is_active']}eye.png{else}eye-close.png{/if}" alt="Změnit viditelnost">
+					</a>
+					<a href="{plink $actionEditGroup, id => $group['gallery_id']}" title="Upravit">
+						<img src="{$baseUri}/images/pencil.png" alt="Upravit">
+					</a>
+					<a n:href="delete, id => $group['gallery_id']" onclick="return!nette.action(this);" title="Smazat">
+						<img src="{$baseUri}/images/cross.png" alt="Smazat">
+					</a>
 				</span>
 				{/if}
 			</td>

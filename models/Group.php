@@ -9,7 +9,7 @@ class Group extends AbstractGroup {
 	public function create(array $data) {
 		$insert_data = array(
 			'is_active' => true,
-			'namespace_id' => self::DEFAULT_NAMESPACE_ID,
+			'namespace_id' => static::DEFAULT_NAMESPACE_ID,
 		);
 
 		foreach ($data as $key => $value) {
@@ -21,18 +21,18 @@ class Group extends AbstractGroup {
 		}
 		
 		/* @var $difference array */
-		if (!($difference = array_diff(self::$basicColumns, array_keys($insert_data)))) {
+		if (!($difference = array_diff(static::$basicColumns, array_keys($insert_data)))) {
 			throw new InvalidStateException('Missing required fields ['.implode(', ', $difference).'].');
 		}
 		
-		if ($this->namespace_id != self::DEFAULT_NAMESPACE_ID) {
+		if ($this->namespace_id != static::DEFAULT_NAMESPACE_ID) {
 			$insert_data['namespace_id'] = $this->namespace_id;
 		}
 
-		dibi::begin();
+		$this->database->begin();
 
-		dibi::query('INSERT INTO gallery %v', $insert_data, '');
-		$gallery_id = dibi::insertId();
+		$this->database->query('INSERT INTO gallery %v', $insert_data, '');
+		$gallery_id = $this->database->insertId();
 		
 		if (isset($data[$this->environment->formFilesKey])) {
 			$this->insertFiles($data[$this->environment->formFilesKey], $gallery_id);
@@ -40,7 +40,7 @@ class Group extends AbstractGroup {
 			throw new InvalidArgumentException('You should not inicialize gallery without any photos.');
 		}
 
-		dibi::commit();
+		$this->database->commit();
 		
 		return $gallery_id;
 	}
@@ -66,17 +66,17 @@ class Group extends AbstractGroup {
 			}
 		}
 
-		dibi::begin();
+		$this->database->begin();
 		
 		if ($update_data) {
-			dibi::query('UPDATE gallery SET ', $update_data, 'WHERE gallery_id = %s', $gallery_id);
+			$this->database->query('UPDATE gallery SET ', $update_data, 'WHERE gallery_id = %s', $gallery_id);
 		}
 		
 		if (isset($data[$this->environment->formFilesKey])) {
 			$this->insertFiles($data[$this->environment->formFilesKey], $gallery_id);
 		}
 
-		dibi::commit();
+		$this->database->commit();
 		
 		return $gallery_id;
 	}
@@ -99,9 +99,9 @@ class Group extends AbstractGroup {
 	}
 
 	public function toggleActive($id) {
-		dibi::begin();
+		$this->database->begin();
 
-		$is_active = dibi::fetchSingle('
+		$is_active = $this->database->fetchSingle('
 			SELECT tg.is_active
 			FROM gallery AS tg
 			WHERE tg.gallery_id = %s', $id, '
@@ -110,19 +110,19 @@ class Group extends AbstractGroup {
 
 		$is_active = $is_active ? false : true;
 
-		dibi::query('
+		$this->database->query('
 			UPDATE gallery
 			SET is_active = %b', $is_active, '
 			WHERE gallery_id = %s', $id, '
 		');
 
-		dibi::commit();
+		$this->database->commit();
 	}
 
 	public function delete($id) {
 		$this->deleteFolder($id);
 
-		dibi::query('
+		$this->database->query('
 			DELETE FROM gallery
 			WHERE gallery_id = %s', $id, '
 		');
@@ -149,7 +149,7 @@ class Group extends AbstractGroup {
 	}
 	
 	public function getPathNamespace() {
-		if ($this->namespace_id === self::DEFAULT_NAMESPACE_ID) {
+		if ($this->namespace_id === static::DEFAULT_NAMESPACE_ID) {
 			return $this->environment->basePath;
 		} else {
 			return $this->environment->basePath . '/' . $this->getCurrentNamespaceName();
@@ -166,7 +166,7 @@ class Group extends AbstractGroup {
 	}
 	
 	public function getCount($admin = false) {
-		return dibi::fetchSingle('
+		return $this->database->fetchSingle('
 			SELECT COUNT(*)
 			FROM gallery AS tg
 			WHERE (
@@ -183,7 +183,7 @@ class Group extends AbstractGroup {
 		$limit = $itemPerPage;
 		$offset = ($page - 1) * $itemPerPage;
 		
-		$gallery_array = dibi::fetchAll('
+		$gallery_array = $this->database->fetchAll('
 			SELECT
 				tg.gallery_id,
 				tg.namespace_id,
@@ -213,7 +213,7 @@ class Group extends AbstractGroup {
 	}
 	
 	public function getById($id) {
-		return dibi::fetch('
+		return $this->database->fetch('
 			SELECT
 				tg.gallery_id, tg.namespace_id, tg.is_active, tg.title, tg.description,
 				tgn.name AS namespace

@@ -12,12 +12,18 @@ abstract class AbstractGalleryModel extends Object {
 	protected $environment;
 	
 	/**
+	 * @var DibiConnection
+	 */
+	protected $database;
+	
+	/**
 	 * Creates new instance.
 	 * 
 	 * @param GalleryEnvironment $environment 
 	 */
-	protected function __construct(GalleryEnvironment $environment) {
+	public function __construct(GalleryEnvironment $environment, DibiConnection $database) {
 		$this->environment = $environment;
+		$this->database = $database;
 	}
 	
 	/**

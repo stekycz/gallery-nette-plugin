@@ -20,7 +20,7 @@ class Photo extends AbstractItem {
 		}
 
 		/* @var $difference array */
-		if (!($difference = array_diff(self::$basicColumns, array_keys($insert_data)))) {
+		if (!($difference = array_diff(static::$basicColumns, array_keys($insert_data)))) {
 			throw new InvalidStateException('Missing required fields ['.implode(', ', $difference).'].');
 		}
 		
@@ -36,18 +36,18 @@ class Photo extends AbstractItem {
 		$file->move($filepath);
 
 		// Database save
-		dibi::begin();
+		$this->database->begin();
 		
 		// Counted values
 		$insert_data['filename'] = $filename;
-		$insert_data['ordering'] = 1 + (int) dibi::fetchSingle('
+		$insert_data['ordering'] = 1 + (int) $this->database->fetchSingle('
 			SELECT MAX(tgp.ordering) FROM gallery_photo AS tgp WHERE tgp.gallery_id = %s', $data['gallery_id'], '
 		');
 
-		dibi::query('INSERT INTO gallery_photo %v', $insert_data, '');
-		$photo_id = dibi::insertId();
+		$this->database->query('INSERT INTO gallery_photo %v', $insert_data, '');
+		$photo_id = $this->database->insertId();
 
-		dibi::commit();
+		$this->database->commit();
 		
 		return $photo_id;
 	}
@@ -73,13 +73,13 @@ class Photo extends AbstractItem {
 		}
 		
 		// Database save
-		dibi::begin();
+		$this->database->begin();
 
 		if ($update_data) {
-			dibi::query('UPDATE gallery_photo SET', $update_data, 'WHERE photo_id = %s', $photo_id);
+			$this->database->query('UPDATE gallery_photo SET', $update_data, 'WHERE photo_id = %s', $photo_id);
 		}
 
-		dibi::commit();
+		$this->database->commit();
 		
 		return $photo_id;
 	}
@@ -112,9 +112,9 @@ class Photo extends AbstractItem {
 	}
 
 	public function toggleActive($id) {
-		dibi::begin();
+		$this->database->begin();
 
-		$is_active = dibi::fetchSingle('
+		$is_active = $this->database->fetchSingle('
 			SELECT tgp.is_active
 			FROM gallery_photo AS tgp
 			WHERE tgp.photo_id = %s', $id, '
@@ -123,19 +123,19 @@ class Photo extends AbstractItem {
 
 		$is_active = $is_active ? false : true;
 
-		dibi::query('
+		$this->database->query('
 			UPDATE gallery_photo
 			SET is_active = %b', $is_active, '
 			WHERE photo_id = %s', $id, '
 		');
 
-		dibi::commit();
+		$this->database->commit();
 	}
 
 	public function delete($id) {
 		$this->deleteFile($id);
 
-		dibi::query('
+		$this->database->query('
 			DELETE FROM gallery_photo
 			WHERE photo_id = %s', $id, '
 		');
@@ -147,7 +147,7 @@ class Photo extends AbstractItem {
 	 * @param int $id Photo ID
 	 */
 	protected function deleteFile($id) {
-		$result = dibi::fetch('
+		$result = $this->database->fetch('
 			SELECT tgp.filename, tgp.gallery_id
 			FROM gallery_photo AS tgp
 			LEFT JOIN gallery AS tg ON (tg.gallery_id = tgp.gallery_id)
@@ -169,7 +169,7 @@ class Photo extends AbstractItem {
 	}
 
 	public function moveLeft($id) {
-		$left_id = dibi::fetchSingle('
+		$left_id = $this->database->fetchSingle('
 			SELECT tgp.photo_id
 			FROM gallery_photo AS tgp
 			WHERE tgp.ordering < (
@@ -186,7 +186,7 @@ class Photo extends AbstractItem {
 	}
 
 	public function moveRight($id) {
-		$right_id = dibi::fetchSingle('
+		$right_id = $this->database->fetchSingle('
 			SELECT tgp.photo_id
 			FROM gallery_photo AS tgp
 			WHERE tgp.ordering > (
@@ -209,31 +209,31 @@ class Photo extends AbstractItem {
 	 * @param int $photo_id_2 Photo ID
 	 */
 	protected function swapPhotos($photo_id_1, $photo_id_2) {
-		dibi::begin();
+		$this->database->begin();
 
-		$orderings = (array) dibi::fetchPairs('
+		$orderings = (array) $this->database->fetchPairs('
 			SELECT tgp.photo_id, tgp.ordering
 			FROM gallery_photo AS tgp
 			WHERE tgp.photo_id IN %l', array($photo_id_1, $photo_id_2,), '
 		');
 
-		dibi::query('
+		$this->database->query('
 			UPDATE gallery_photo
 			SET ordering = %s', $orderings[$photo_id_2], '
 			WHERE photo_id = %s', $photo_id_1, '
 		');
 
-		dibi::query('
+		$this->database->query('
 			UPDATE gallery_photo
 			SET ordering = %s', $orderings[$photo_id_1], '
 			WHERE photo_id = %s', $photo_id_2, '
 		');
 
-		dibi::commit();
+		$this->database->commit();
 	}
 
 	public function getByGallery($id, $admin = false) {
-		$photo_array = dibi::fetchAll('
+		$photo_array = $this->database->fetchAll('
 			SELECT
 				tgp.photo_id,
 				tgp.is_active,
@@ -249,7 +249,7 @@ class Photo extends AbstractItem {
 	}
 
 	public function getById($id) {
-		return dibi::fetch('
+		return $this->database->fetch('
 			SELECT tgp.photo_id, tgp.is_active, tgp.title
 			FROM gallery_photo AS tgp
 			WHERE tgp.photo_id = %s', $id, '
