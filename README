@@ -2,39 +2,68 @@
 Author: Martin Štekl <martin.stekl@gmail.com>
 
 == Description ==
-Plugin helps to create galleries of photos. (In code there it is called groups and items.)
+Plugin helps to create galleries of photos.
 
-This is built for PHP 5.2+ and based on Nette Framerwork 2.0.
+This is built for PHP 5.3+ and based on Nette Framerwork 2.0.
 
 == Dependencies ==
 It depends on Nette Framework, dibi and MultipleFileUploader (Nette Plugin).
-VisualPaginator Nette Plugin is also required for paging. If you want to use
+Visual Paginator Nette Plugin is also required for paging. If you want to use
 your own implementation of paginator you have to change one line in code.
 
-Note: Database layer can be replaced in model. MultipleFileUploader is optional
-but recomanded.
+Notes:
+- Database layer can be replaced with DataProvider.
+- MultipleFileUploader is optional but recomanded.
 
 == Installation ==
 
-1) Copy all files into folder with your project (libs).
+1) Copy all files into folder with your project (libs dir).
 
 2a) Install all database tables into your database. If it is needed change model.
-	Default database structure is in /model/mysql.sql
+	Default database structure is in /DataProvider/mysql.sql
 
 2b) If you want to add more columns you have to add it into *_extended table.
     Basic table is for basic data only. Plugin is sensitive to basic table
     structure.
 
-3) Create service for GalleryEnvironment. The easiest way is add service in startup
-   function in your BasePresenter.
-   To create service "gallery" write this:
-   
-   $this->context->addService('gallery', 'GalleryEnvironment::getInstance');
-   
-   Note: "gallery" in config.neon is fixed label, service name can be changed.
+3) For easier usage create services for model layer.
+    Example:
+--------------------------------------------------------------------------------
+    parameters:
+        imageHelper:
+            baseUrl: http://example.com/
+            tempDir: files/temp
+        gallery:
+            basePath: %wwwDir%/files/gallery
+    services:
+        imageHelper:
+            class: \ImageHelper(@cache, %imageHelper.baseUrl%,  %imageHelper.tempDir%)
+        galleryDataProvider:
+            class: \steky\nette\gallery\DataProvider\Dibi(@database)
+        galleryItemModel:
+            class: \steky\nette\gallery\models\Item(@galleryDataProvider, %gallery.basePath%)
+        galleryGroupModel:
+            class: \steky\nette\gallery\models\Group(@galleryDataProvider, %gallery.basePath%)
+--------------------------------------------------------------------------------
 
-4) Configure your gallery environment in config.neon.
+4) Use plugin and create controls:
+--------------------------------------------------------------------------------
+    new GroupControl($this, 'galleries',
+        $this->context->imageHelper,
+        $this->context->galleryGroupModel,
+        $this->context->galleryItemModel,
+        $this->context->galleryDataProvider->namespaces,
+        'Homepage:gallery'
+    );
+--------------------------------------------------------------------------------
+    new ItemControl($this, 'photos',
+        $this->context->imageHelper,
+        $this->context->galleryGroupModel,
+        $this->context->galleryItemModel,
+        $id
+    );
+--------------------------------------------------------------------------------
 
 == Notes ==
-In example templates is used fancybox javascript library for photogalleries and 
-fugue icons. Tepmplates should be changed/replaced for using in your own project.
+In example templates is used fancybox javascript library for photogalleries and
+fugue icons. Templates should be changed/replaced for using in your own project.
