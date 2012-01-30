@@ -1,11 +1,15 @@
 <?php
 
+namespace steky\nette\gallery\models;
+
 /**
  * @author Martin Štekl <martin.stekl@gmail.com>
- * @since 2011-06-26
+ * @since 2011.06.26
  */
 abstract class AbstractItem extends AbstractGalleryModel {
 
+	const FILE_KEY = 'file';
+	
 	/**
 	 * @var array Names of columns which are required
 	 */

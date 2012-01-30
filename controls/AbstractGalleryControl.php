@@ -1,19 +1,23 @@
 <?php
 
+namespace steky\nette\gallery\controls;
+use \Nette\Application\UI\Control,
+	\Nette\ComponentModel\Container,
+	\steky\nette\gallery\IDataProvider,
+	\steky\nette\gallery\models\AbstractGroup,
+	\steky\nette\gallery\models\AbstractItem,
+	\ImageHelper;
+
 /**
  * @author Martin Štekl <martin.stekl@gmail.com>
- * @since 2011-06-28
+ * @since 2011.06.28
  */
 abstract class AbstractGalleryControl extends Control {
-	
+
 	/**
 	 * @var bool Show admin environment?
 	 */
 	protected $isAdmin = false;
-	/**
-	 * @var GalleryEnvironment
-	 */
-	protected $environment;
 	/**
 	 * @var string Path to file with component template
 	 */
@@ -22,17 +26,34 @@ abstract class AbstractGalleryControl extends Control {
 	 * @var string Name of snippet in template
 	 */
 	protected $snippetName;
+	/**
+	 * @var ImageHelper Helps with work around pictures
+	 */
+	protected $imageHelper;
 	
 	/**
-	 * @param ComponentContainer $parent
-	 * @param string $name
-	 * @param GalleryEnvironment $environment
+	 * @var steky\nette\gallery\models\AbstractGroup
 	 */
-	public function __construct(ComponentContainer $parent, $name, GalleryEnvironment $environment) {
+	protected $groupModel;
+	/**
+	 * @var steky\nette\gallery\models\AbstractItem
+	 */
+	protected $itemModel;
+
+	/**
+	 * @param Nette\ComponentModel\Container $parent
+	 * @param string $name
+	 * @paramm ImageHelper $imageHelper
+	 * @param steky\nette\gallery\models\AbstractGroup $groupModel
+	 * @param steky\nette\gallery\models\AbstractItem $itemModel
+	 */
+	public function __construct(Container $parent, $name, ImageHelper $imageHelper, AbstractGroup $groupModel, AbstractItem $itemModel) {
 		parent::__construct($parent, $name);
-		$this->environment = $environment;
+		$this->imageHelper = $imageHelper;
+		$this->groupModel = $groupModel;
+		$this->itemModel = $itemModel;
 	}
-	
+
 	/**
 	 * @param bool $admin
 	 * @return AbstractGalleryControl
@@ -41,17 +62,17 @@ abstract class AbstractGalleryControl extends Control {
 		$this->isAdmin = $admin;
 		return $this;
 	}
-	
+
 	protected function createTemplate($class = NULL) {
 		$template = parent::createTemplate($class);
-		$template->registerHelper('resize', 'ImageHelper::resize');
-		$template->registerHelper('gallery', 'ImageHelper::gallery');
+		$template->registerHelper('resize', callback($this->imageHelper, 'resize'));
+		$template->registerHelper('gallery', callback($this->imageHelper, 'gallery'));
 		return $template;
 	}
 
 	/**
 	 * Setups template file and snippet name if is filled.
-	 * 
+	 *
 	 * @param string $templateFile
 	 * @param string $snippetName
 	 */
@@ -66,17 +87,17 @@ abstract class AbstractGalleryControl extends Control {
 	 * Renders control.
 	 */
 	abstract public function render();
-	
+
 	/**
 	 * Toggles activity/visibility.
-	 * 
+	 *
 	 * @param int $id
 	 */
 	abstract public function handleToggleActive($id);
-	
+
 	/**
 	 * @param int $id
 	 */
 	abstract public function handleDelete($id);
-	
+
 }

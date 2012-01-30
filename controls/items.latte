@@ -26,23 +26,23 @@
 		<tr>
 				{/if}
 			<td>
-				{? $image_path = 'files/gallery/' . ($gallery['namespace'] ? $gallery['namespace'].'/' : '') . $item['gallery_id'].'/'.$item['filename']}
+				{? $image_path = '../files/gallery/' . $gallery['namespace'] .'/' . $item['gallery_id'].'/'.$item['filename']}
 				{$image_path|gallery:$item['title']:$item['title']:'group-'.$item['gallery_id']}
 				{if $isAdmin}
 				<span class="actions">
 				{if !$iterator->isFirst()}
-				<a n:href="moveLeft, id => $item['photo_id']" onclick="return!nette.action(this);" title="Vlevo">
+				<a n:href="moveLeft, id => $item['photo_id']" class="ajax" title="Vlevo">
 					<img src="{$baseUri}/images/arrow-180-small.png" alt="Vlevo">
 				</a>
 				{/if}
-				<a n:href="toggleActive, id => $item['photo_id']" onclick="return!nette.action(this);" title="Změnit viditelnost">
+				<a n:href="toggleActive, id => $item['photo_id']" class="ajax" title="Změnit viditelnost">
 					<img src="{$baseUri}/images/{if $item['is_active']}eye.png{else}eye-close.png{/if}" alt="Změnit viditelnost">
 				</a>
-				<a n:href="delete, id => $item['photo_id']" onclick="return!nette.action(this);" title="Smazat">
+				<a n:href="delete, id => $item['photo_id']" class="ajax" title="Smazat">
 					<img src="{$baseUri}/images/cross.png" alt="Smazat">
 				</a>
 				{if !$iterator->isLast()}
-				<a n:href="moveRight, id => $item['photo_id']" onclick="return!nette.action(this);" title="Vpravo">
+				<a n:href="moveRight, id => $item['photo_id']" class="ajax" title="Vpravo">
 					<img src="{$baseUri}/images/arrow-000-small.png" alt="Vpravo">
 				</a>
 				{/if}

@@ -1,8 +1,12 @@
 <?php
 
+namespace steky\nette\gallery\models;
+use \Nette\InvalidStateException,
+	\Nette\InvalidArgumentException;
+
 /**
  * @author Martin Štekl <martin.stekl@gmail.com>
- * @since 2011-06-26
+ * @since 2011.06.26
  */
 class Group extends AbstractGroup {
 
@@ -15,7 +19,7 @@ class Group extends AbstractGroup {
 		foreach ($data as $key => $value) {
 			if (!$value) {
 				unset($data[$key]);
-			} elseif ($key != $this->environment->formFilesKey) {
+			} elseif ($key != static::FORM_FILES_KEY) {
 				$insert_data[$key] = $value;
 			}
 		}
@@ -29,18 +33,14 @@ class Group extends AbstractGroup {
 			$insert_data['namespace_id'] = $this->namespace_id;
 		}
 
-		$this->database->begin();
-
-		$this->database->query('INSERT INTO gallery %v', $insert_data, '');
-		$gallery_id = $this->database->insertId();
-		
-		if (isset($data[$this->environment->formFilesKey])) {
-			$this->insertFiles($data[$this->environment->formFilesKey], $gallery_id);
+		if (isset($form_data[static::FORM_FILES_KEY])) {
+			$files = $form_data[static::FORM_FILES_KEY];
 		} else {
 			throw new InvalidArgumentException('You should not inicialize gallery without any photos.');
 		}
-
-		$this->database->commit();
+		
+		$gallery_id = $this->dataProvider->createGroup($insert_data);
+		$this->insertFiles($files, $gallery_id);
 		
 		return $gallery_id;
 	}
@@ -58,74 +58,52 @@ class Group extends AbstractGroup {
 		
 		$gallery_id = $data['gallery_id'];
 		$previous_data = $this->getById($gallery_id);
-		$update_data = array();
 		
+		$update_data = array();
 		foreach ($data as $key => $value) {
-			if ($key != $this->environment->formFilesKey && $previous_data[$key] != $value) {
+			if ($key != static::FORM_FILES_KEY && $previous_data[$key] != $value) {
 				$update_data[$key] = $value;
 			}
 		}
-
-		$this->database->begin();
 		
-		if ($update_data) {
-			$this->database->query('UPDATE gallery SET ', $update_data, 'WHERE gallery_id = %s', $gallery_id);
-		}
-		
-		if (isset($data[$this->environment->formFilesKey])) {
-			$this->insertFiles($data[$this->environment->formFilesKey], $gallery_id);
+		$files = array();
+		if (isset($data[static::FORM_FILES_KEY])) {
+			$files = $data[static::FORM_FILES_KEY];
 		}
 
-		$this->database->commit();
+		$this->dataProvider->updateGroup($gallery_id, $update_data);
+		if ($files) {
+			$this->insertFiles($files, $gallery_id);
+		}
 		
 		return $gallery_id;
 	}
 	
 	/**
-	 * Inserts given files into gallery by gallery_id.
+	 * Inserts given files into group by group_id.
 	 * 
 	 * @param array $files
-	 * @param int $gallery_id
+	 * @param int $group_id
 	 */
-	protected function insertFiles(array $files, $gallery_id) {
+	protected function insertFiles(array $files, $group_id) {
 		$files_data = array(
-			'gallery_id' => $gallery_id,
+			'gallery_id' => $group_id,
 		);
-		
+
+		$itemModel = new Item($this->dataProvider, $this->basePath);
 		foreach ($files as $file) {
-			$files_data[$this->environment->fileKey] = $file;
-			$this->environment->itemModel->create($files_data);
+			$files_data[AbstractItem::FILE_KEY] = $file;
+			$itemModel->create($files_data);
 		}
 	}
-
+	
 	public function toggleActive($id) {
-		$this->database->begin();
-
-		$is_active = $this->database->fetchSingle('
-			SELECT tg.is_active
-			FROM gallery AS tg
-			WHERE tg.gallery_id = %s', $id, '
-			LIMIT 1
-		');
-
-		$is_active = $is_active ? false : true;
-
-		$this->database->query('
-			UPDATE gallery
-			SET is_active = %b', $is_active, '
-			WHERE gallery_id = %s', $id, '
-		');
-
-		$this->database->commit();
+		$this->dataProvider->toggleActiveGroup($id);
 	}
 
 	public function delete($id) {
 		$this->deleteFolder($id);
-
-		$this->database->query('
-			DELETE FROM gallery
-			WHERE gallery_id = %s', $id, '
-		');
+		$this->dataProvider->deleteGroup($id);
 	}
 
 	/**
@@ -134,13 +112,11 @@ class Group extends AbstractGroup {
 	 * @param int $id Gallery ID
 	 */
 	protected function deleteFolder($id) {
-		$photos = $this->environment->itemModel->getByGallery($id, true);
+		$itemModel = new Item($this->dataProvider, $this->basePath);
+		$photos = $itemModel->getByGallery($id, true);
 		foreach ($photos as $photo) {
-			$this->environment->itemModel->delete($photo['photo_id']);
+			$itemModel->delete($photo['photo_id']);
 		}
-		
-		$gallery = $this->environment->groupModel->getById($id);
-		$namespace_id = $gallery['namespace_id'];
 		
 		$regular_dir_path = $this->getPathGallery($id);
 		if (is_dir($regular_dir_path)) {
@@ -149,16 +125,11 @@ class Group extends AbstractGroup {
 	}
 	
 	public function getPathNamespace() {
-		if ($this->namespace_id === static::DEFAULT_NAMESPACE_ID) {
-			return $this->environment->basePath;
-		} else {
-			return $this->environment->basePath . '/' . $this->getCurrentNamespaceName();
-		}
+		return $this->basePath . '/' . $this->getCurrentNamespaceName();
 	}
 	
 	protected function getCurrentNamespaceName() {
-		$namespaces = $this->environment->namespaces;
-		return $namespaces[$this->namespace_id];
+		return $this->dataProvider->namespaces[$this->namespace_id];
 	}
 	
 	public function getPathGallery($id) {
@@ -166,62 +137,15 @@ class Group extends AbstractGroup {
 	}
 	
 	public function getCount($admin = false) {
-		return $this->database->fetchSingle('
-			SELECT COUNT(*)
-			FROM gallery AS tg
-			WHERE (
-				SELECT COUNT(*)
-				FROM gallery_photo AS tgp
-				WHERE tgp.gallery_id = tg.gallery_id %SQL', (!$admin ? 'AND tgp.is_active = 1' : ''), '
-			) > 0
-			%sql', array('AND tg.namespace_id = %s', $this->namespace_id), '
-			%SQL', (!$admin ? 'AND tg.is_active = 1' : ''), '
-		');
+		return $this->dataProvider->getGroupCount($this->namespace_id, $admin);
 	}
 
 	public function getAll($page = 1, $itemPerPage = 25, $admin = false) {
-		$limit = $itemPerPage;
-		$offset = ($page - 1) * $itemPerPage;
-		
-		$gallery_array = $this->database->fetchAll('
-			SELECT
-				tg.gallery_id,
-				tg.namespace_id,
-				tgn.name AS namespace,
-				tg.is_active,
-				tg.title,
-				tg.description,
-				(
-					SELECT tgp.filename FROM gallery_photo AS tgp
-					WHERE tgp.gallery_id = tg.gallery_id %SQL', (!$admin ? 'AND tgp.is_active = 1' : ''), '
-					ORDER BY tgp.ordering ASC
-					LIMIT 1
-				) AS title_filename,
-				(
-					SELECT COUNT(*)
-					FROM gallery_photo AS tgp
-					WHERE tgp.gallery_id = tg.gallery_id %SQL', (!$admin ? 'AND tgp.is_active = 1' : ''), '
-				) AS photo_count
-			FROM gallery AS tg
-			LEFT JOIN gallery_namespace AS tgn ON (tgn.namespace_id = tg.namespace_id)
-			WHERE %sql', array('tg.namespace_id = %s', $this->namespace_id), '
-			%SQL', (!$admin ? 'AND tg.is_active = 1' : ''), '
-			HAVING photo_count > 0
-			%lmt', $limit, ' %ofs', $offset, '
-		');
-		return $gallery_array;
+		return $this->dataProvider->getAllGroups($this->namespace_id, $admin, $page, $itemPerPage);
 	}
 	
 	public function getById($id) {
-		return $this->database->fetch('
-			SELECT
-				tg.gallery_id, tg.namespace_id, tg.is_active, tg.title, tg.description,
-				tgn.name AS namespace
-			FROM gallery AS tg
-			LEFT JOIN gallery_namespace AS tgn ON (tgn.namespace_id = tg.namespace_id)
-			WHERE tg.gallery_id = %s', $id, '
-			LIMIT 1
-		');
+		return $this->dataProvider->getGroupById($id);
 	}
 
 }

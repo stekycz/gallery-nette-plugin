@@ -1,13 +1,23 @@
 <?php
 
+namespace steky\nette\gallery\controls;
+
+use \Nette\ComponentModel\Container,
+	\Nette\InvalidArgumentException,
+	\steky\nette\gallery\IDataProvider,
+	\steky\nette\gallery\models\AbstractGroup,
+	\steky\nette\gallery\models\AbstractItem,
+	\ImageHelper,
+	\VisualPaginator;
+
 /**
  * @author Martin Štekl <martin.stekl@gmail.com>
- * @since 2011-06-26
+ * @since 2011.06.26
  */
 class GroupControl extends AbstractGalleryControl {
 
 	const DEFAULT_ITEMS_PER_PAGE = 25;
-	
+
 	/**
 	 * @var string Action which shows item list
 	 */
@@ -20,59 +30,56 @@ class GroupControl extends AbstractGalleryControl {
 
 	/**
 	 * If namespace is not set default root folder is used.
-	 * 
+	 *
 	 * @var int Namespace for groups
 	 */
-	protected $namespace_id = AbstractGroup::DEFAULT_NAMESPACE_ID;
+	protected $namespace_id;
+	
+	/**
+	 * @var array
+	 */
+	private $namespaces;
 
 	/**
-	 * @param ComponentContainer $parent
+	 * @param Nette\ComponentModel\Container $parent
 	 * @param string $name
-	 * @param GalleryEnvironment $environment
+	 * @param ImageHelper $imageHelper
+	 * @param steky\nette\gallery\models\AbstractGroup $groupModel
+	 * @param steky\nette\gallery\models\AbstractItem $itemModel
+	 * @param array $namespaces Exists namespaces in associative array
 	 * @param string $actionViewItems Action to view all items in group
-	 * @param string $actionEditGroup Action to edit group
 	 */
-	public function __construct(ComponentContainer $parent, $name, GalleryEnvironment $environment, $actionViewItems, $actionEditGroup = null) {
-		parent::__construct($parent, $name, $environment);
+	public function __construct(Container $parent, $name, ImageHelper $imageHelper, AbstractGroup $groupModel, AbstractItem $itemModel, array $namespaces, $actionViewItems) {
+		parent::__construct($parent, $name, $imageHelper, $groupModel, $itemModel);
 		$this->actionViewItems = $actionViewItems;
-		$this->actionEditGroup = $actionEditGroup;
-		$this->templateFile = dirname(__FILE__) . '/groups.latte';
+		$this->namespaces = $namespaces;
+		
+		$this->templateFile = __DIR__ . '/groups.latte';
 		$this->snippetName = 'groupTable';
-	}
-
-	/**
-	 * Creates new instance.
-	 * 
-	 * @param ComponentContainer $parent
-	 * @param string $name
-	 * @param GalleryEnvironment $environment
-	 * @param string $actionViewItems Action to view all items in group
-	 * @param string $actionEditGroup Action to edit group
-	 * @return GroupControl
-	 */
-	public static function create(ComponentContainer $parent, $name, GalleryEnvironment $environment, $actionViewItems, $actionEditGroup = null) {
-		return new self($parent, $name, $environment, $actionViewItems, $actionEditGroup);
+		$this->namespace_id = AbstractGroup::DEFAULT_NAMESPACE_ID;
 	}
 
 	/**
 	 * @param bool $admin
-	 * @return GroupControl
+	 * @param string $actionEditGroup Action to edit group
+	 * @return steky\nette\gallery\controls\GroupControl
 	 */
-	public function setAdmin($admin) {
-		if ($admin && !$this->actionEditGroup) {
-			throw new LogicException('Action for Group Edit can not be empty if admin mode is enabled.');
+	public function setAdmin($admin, $actionEditGroup = null) {
+		if ($actionEditGroup === null) {
+			throw new InvalidArgumentException('GroupControl can not be set as Admin without correct edit action.');
 		}
+		$this->actionEditGroup = $actionEditGroup;
 		return parent::setAdmin($admin);
 	}
 
 	/**
 	 * Setup namespace for current control.
-	 * 
+	 *
 	 * @param string $namsespace_id
-	 * @return GroupControl Fluent interface
+	 * @return steky\nette\gallery\controls\GroupControl Fluent interface
 	 */
 	public function useNamespace($namespace_id) {
-		if (!in_array($namespace_id, array_keys($this->environment->namespaces))) {
+		if (!in_array($namespace_id, array_keys($this->namespaces))) {
 			throw new InvalidArgumentException('Namespace [' . $namespace_id . '] does not exist.');
 		}
 
@@ -84,16 +91,18 @@ class GroupControl extends AbstractGalleryControl {
 		$this->template->actionViewItems = $this->actionViewItems;
 		$this->template->actionEditGroup = $this->actionEditGroup;
 		$this->template->isAdmin = $this->isAdmin;
-		$this->template->namespace = $this->environment->namespaces[$this->namespace_id];
+		$this->template->namespace = $this->namespaces[$this->namespace_id];
 
 		$paginator = $this['paginator']->getPaginator();
 		$paginator->itemsPerPage = $groups_per_page;
 
+		$groupModel = $this->groupModel;
+
 		if ($this->namespace_id) {
-			$this->environment->groupModel->useNamespace($this->namespace_id);
+			$groupModel->useNamespace($this->namespace_id);
 		}
 
-		$this->template->groups = $this->environment->groupModel
+		$this->template->groups = $groupModel
 				->getAll($paginator->page, $paginator->itemsPerPage, $this->isAdmin);
 		$this->template->setFile($this->templateFile);
 		$this->template->render();
@@ -101,13 +110,13 @@ class GroupControl extends AbstractGalleryControl {
 
 	public function handleToggleActive($id) {
 		$this->template->setFile($this->templateFile);
-		$this->environment->groupModel->toggleActive($id);
+		$this->groupModel->toggleActive($id);
 		$this->invalidateControl($this->snippetName);
 	}
 
 	public function handleDelete($id) {
 		$this->template->setFile($this->templateFile);
-		$this->environment->groupModel->delete($id);
+		$this->groupModel->delete($id);
 		$this->invalidateControl($this->snippetName);
 	}
 
@@ -115,7 +124,7 @@ class GroupControl extends AbstractGalleryControl {
 		$vp = new VisualPaginator($this, $name);
 		$paginator = $vp->getPaginator();
 		$paginator->itemsPerPage = static::DEFAULT_ITEMS_PER_PAGE;
-		$paginator->itemCount = $this->environment->groupModel->getCount($this->isAdmin);
+		$paginator->itemCount = $this->groupModel->getCount($this->isAdmin);
 		return $vp;
 	}
 

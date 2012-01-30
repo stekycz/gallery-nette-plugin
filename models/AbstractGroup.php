@@ -1,12 +1,17 @@
 <?php
 
+namespace steky\nette\gallery\models;
+use \steky\nette\gallery\IDataProvider;
+
 /**
  * @author Martin Štekl <martin.stekl@gmail.com>
- * @since 2011-06-26
+ * @since 2011.06.26
  */
 abstract class AbstractGroup extends AbstractGalleryModel {
 
 	const DEFAULT_NAMESPACE_ID = 1;
+	
+	const FORM_FILES_KEY = 'photos';
 	
 	/**
 	 * @var array Names of columns which are required
@@ -20,14 +25,23 @@ abstract class AbstractGroup extends AbstractGalleryModel {
 	 * 
 	 * @var string Namespace for groups
 	 */
-	protected $namespace_id = self::DEFAULT_NAMESPACE_ID;
+	protected $namespace_id;
 	
+	/**
+	 * @param steky\nette\gallery\IDataProvider $dataProvider
+	 * @param string $basePath
+	 */
+	public function __construct(IDataProvider $dataProvider, $basePath) {
+		parent::__construct($dataProvider, $basePath);
+		$this->namespace_id = static::DEFAULT_NAMESPACE_ID;
+	}
+
 	/**
 	 * Setup namespace for current model. If directory for namespace does not
 	 * exists creates it.
 	 * 
 	 * @param int $namespace_id
-	 * @return AbstractGroup Fluent interface
+	 * @return steky\nette\gallery\models\AbstractGroup Fluent interface
 	 */
 	public function useNamespace($namsespace_id) {
 		$this->namespace_id = $namsespace_id;
