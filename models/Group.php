@@ -23,49 +23,49 @@ class Group extends AbstractGroup {
 				$insert_data[$key] = $value;
 			}
 		}
-		
+
 		/* @var $difference array */
 		if (!($difference = array_diff(static::$basicColumns, array_keys($insert_data)))) {
 			throw new InvalidStateException('Missing required fields ['.implode(', ', $difference).'].');
 		}
-		
+
 		if ($this->namespace_id != static::DEFAULT_NAMESPACE_ID) {
 			$insert_data['namespace_id'] = $this->namespace_id;
 		}
 
-		if (isset($form_data[static::FORM_FILES_KEY])) {
-			$files = $form_data[static::FORM_FILES_KEY];
+		if (isset($data[static::FORM_FILES_KEY])) {
+			$files = $data[static::FORM_FILES_KEY];
 		} else {
 			throw new InvalidArgumentException('You should not inicialize gallery without any photos.');
 		}
-		
+
 		$gallery_id = $this->dataProvider->createGroup($insert_data);
 		$this->insertFiles($files, $gallery_id);
-		
+
 		return $gallery_id;
 	}
 
 	/**
 	 * Updates group. It means add photos and change extended info. If extended
 	 * info does not exist it will be inserted.
-	 * 
+	 *
 	 * @param array $data
 	 */
 	public function update(array $data) {
 		if (!array_key_exists('gallery_id', $data)) {
 			throw new InvalidArgumentException('Given data do not contain gallery_id.');
 		}
-		
+
 		$gallery_id = $data['gallery_id'];
 		$previous_data = $this->getById($gallery_id);
-		
+
 		$update_data = array();
 		foreach ($data as $key => $value) {
 			if ($key != static::FORM_FILES_KEY && $previous_data[$key] != $value) {
 				$update_data[$key] = $value;
 			}
 		}
-		
+
 		$files = array();
 		if (isset($data[static::FORM_FILES_KEY])) {
 			$files = $data[static::FORM_FILES_KEY];
@@ -75,13 +75,13 @@ class Group extends AbstractGroup {
 		if ($files) {
 			$this->insertFiles($files, $gallery_id);
 		}
-		
+
 		return $gallery_id;
 	}
-	
+
 	/**
 	 * Inserts given files into group by group_id.
-	 * 
+	 *
 	 * @param array $files
 	 * @param int $group_id
 	 */
@@ -96,7 +96,7 @@ class Group extends AbstractGroup {
 			$itemModel->create($files_data);
 		}
 	}
-	
+
 	public function toggleActive($id) {
 		$this->dataProvider->toggleActiveGroup($id);
 	}
@@ -108,7 +108,7 @@ class Group extends AbstractGroup {
 
 	/**
 	 * Deletes whole folder of group.
-	 * 
+	 *
 	 * @param int $id Gallery ID
 	 */
 	protected function deleteFolder($id) {
@@ -117,25 +117,25 @@ class Group extends AbstractGroup {
 		foreach ($photos as $photo) {
 			$itemModel->delete($photo['photo_id']);
 		}
-		
+
 		$regular_dir_path = $this->getPathGallery($id);
 		if (is_dir($regular_dir_path)) {
 			rmdir($regular_dir_path);
 		}
 	}
-	
+
 	public function getPathNamespace() {
 		return $this->basePath . '/' . $this->getCurrentNamespaceName();
 	}
-	
+
 	protected function getCurrentNamespaceName() {
 		return $this->dataProvider->namespaces[$this->namespace_id];
 	}
-	
+
 	public function getPathGallery($id) {
 		return $this->getPathNamespace() . '/' . $id;
 	}
-	
+
 	public function getCount($admin = false) {
 		return $this->dataProvider->getGroupCount($this->namespace_id, $admin);
 	}
@@ -143,7 +143,7 @@ class Group extends AbstractGroup {
 	public function getAll($page = 1, $itemPerPage = 25, $admin = false) {
 		return $this->dataProvider->getAllGroups($this->namespace_id, $admin, $page, $itemPerPage);
 	}
-	
+
 	public function getById($id) {
 		return $this->dataProvider->getGroupById($id);
 	}
