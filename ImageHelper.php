@@ -9,13 +9,15 @@ use \Nette\Object,
 	\Nette\InvalidStateException;
 
 /**
- * Image helper with automatic image resize and cache
+ * Image helper with automatic image resize and cache.
  *
  * @author Roman Ozana, ozana@omdesign.cz
  * @link www.omdesign.cz
  *
- * Updated for new version of Nette and for PHP 5.3+ by Martin Štekl
+ * Updated for new Nette 2.0 and for PHP 5.3+ by Martin Štekl
  * @author Martin Štekl <martin.stekl@gmail.com>
+ * @link www.steky.cz
+ * @license MIT
  *
  * add to presenter before render function
  * $this->template->registerHelper('resize', callback($this->context->imageHelper, 'resize'));
