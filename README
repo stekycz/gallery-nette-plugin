@@ -1,5 +1,6 @@
 === Gallery Nette Plugin ===
 Author: Martin Štekl <martin.stekl@gmail.com>
+Copyright (c) 2011, 2012 Martin Štekl
 
 == Description ==
 Plugin helps to create galleries of photos.
@@ -19,12 +20,9 @@ Notes:
 
 1) Copy all files into folder with your project (libs dir).
 
-2a) Install all database tables into your database. If it is needed change model.
-	Default database structure is in /DataProvider/mysql.sql
-
-2b) If you want to add more columns you have to add it into *_extended table.
-    Basic table is for basic data only. Plugin is sensitive to basic table
-    structure.
+2) Install all database tables into your database. If it is needed change DataProvider.
+   Default database structure is in /DataProvider/mysql.sql
+   If you want to add custom columns just edit existing tables.
 
 3) For easier usage create services for model layer.
     Example:
