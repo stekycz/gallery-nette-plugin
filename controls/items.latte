@@ -1,16 +1,28 @@
 {*
- * @param array $items
- * @param array $gallery
- * @param bool $isAdmin
+ * For the full copyright and license information, please view
+ * the file license.txt that was distributed with this source code.
+ * 
+ * @author Martin Štekl <martin.stekl@gmail.com>
+ * @since 2011.06.26
+ * @license MIT
+ * @copyright Copyright (c) 2011, 2012 Martin Štekl <martin.stekl@gmail.com>
+ *}
+
+{*
+ * Template for item control.
+ *
+ * @param bool $isAdmin If it is TRUE show admin buttons
+ * @param array $group Data row with informations about group
+ * @param array $items Data for items
  *}
 
 {if $items}
-<h2>{$gallery['title']}</h2>
+<h2>{$group['title']}</h2>
 
-<p>{$gallery['description']}</p>
+<p>{$group['description']}</p>
 
 {snippet itemTable}
-<table class="items" id="group-{!$gallery['gallery_id']}">
+<table class="items" id="group-{!$group['gallery_id']}">
 	<colgroup>
 		<col style="width: 165px;" />
 		<col style="width: 165px;" />
@@ -26,7 +38,7 @@
 		<tr>
 				{/if}
 			<td>
-				{? $image_path = '../files/gallery/' . $gallery['namespace'] .'/' . $item['gallery_id'].'/'.$item['filename']}
+				{? $image_path = '../files/gallery/' . $group['namespace'] .'/' . $item['gallery_id'].'/'.$item['filename']}
 				{$image_path|gallery:$item['title']:$item['title']:'group-'.$item['gallery_id']}
 				{if $isAdmin}
 				<span class="actions">

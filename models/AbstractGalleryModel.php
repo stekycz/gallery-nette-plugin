@@ -1,12 +1,20 @@
 <?php
+/**
+ * For the full copyright and license information, please view
+ * the file license.txt that was distributed with this source code.
+ * 
+ * @author Martin Štekl <martin.stekl@gmail.com>
+ * @since 2011.06.28
+ * @license MIT
+ * @copyright Copyright (c) 2011, 2012 Martin Štekl <martin.stekl@gmail.com>
+ */
 
 namespace steky\nette\gallery\models;
 use \Nette\Object,
 	\steky\nette\gallery\IDataProvider;
 
 /**
- * @author Martin Štekl <martin.stekl@gmail.com>
- * @since 2011.06.28
+ * Defines basic functionality for model.
  */
 abstract class AbstractGalleryModel extends Object {
 

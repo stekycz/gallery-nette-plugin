@@ -1,4 +1,13 @@
 <?php
+/**
+ * For the full copyright and license information, please view
+ * the file license.txt that was distributed with this source code.
+ * 
+ * @author Martin Štekl <martin.stekl@gmail.com>
+ * @since 2011.06.26
+ * @license MIT
+ * @copyright Copyright (c) 2011, 2012 Martin Štekl <martin.stekl@gmail.com>
+ */
 
 namespace steky\nette\gallery\controls;
 use \Nette\ComponentModel\Container,
@@ -8,13 +17,12 @@ use \Nette\ComponentModel\Container,
 	\ImageHelper;
 
 /**
- * @author Martin Štekl <martin.stekl@gmail.com>
- * @since 2011.06.26
+ * Contains basic implementation for item control.
  */
 class ItemControl extends AbstractGalleryControl {
 
 	/**
-	 * @var int
+	 * @var int ID for group in which are shown items
 	 */
 	protected $group_id;
 	
@@ -36,7 +44,7 @@ class ItemControl extends AbstractGalleryControl {
 	public function render() {
 		$this->template->isAdmin = $this->isAdmin;
 		
-		$this->template->gallery = $this->groupModel->getById($this->group_id);
+		$this->template->group = $this->groupModel->getById($this->group_id);
 		
 		$this->template->items = $this->itemModel->getByGallery($this->group_id, $this->isAdmin);
 		$this->template->setFile($this->templateFile);

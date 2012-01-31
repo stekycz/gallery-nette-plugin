@@ -1,10 +1,18 @@
 <?php
+/**
+ * For the full copyright and license information, please view
+ * the file license.txt that was distributed with this source code.
+ * 
+ * @author Martin Štekl <martin.stekl@gmail.com>
+ * @since 2012.01.30
+ * @license MIT
+ * @copyright Copyright (c) 2011, 2012 Martin Štekl <martin.stekl@gmail.com>
+ */
 
 namespace steky\nette\gallery;
 
 /**
- * @author Martin Štekl <martin.stekl@gmail.com>
- * @since 2012.01.30
+ * Define how to communicate with database.
  */
 interface IDataProvider {
 	
