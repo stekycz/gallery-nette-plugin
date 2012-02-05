@@ -2,7 +2,6 @@
 
 use \Nette\Object,
 	\Nette\Caching\Cache,
-	\Nette\DI\Container,
 	\Nette\Image,
 	\Nette\Utils\Strings,
 	\Nette\Utils\Html,
@@ -50,6 +49,11 @@ class ImageHelper extends Object {
 	protected $tempDir;
 
 	/**
+	 * @var timestamp Default value is 1 day
+	 */
+	protected $cacheExpireTimestamp;
+
+	/**
 	 * @param string $baseUrl Absolute web URL
 	 * @param Nette\Caching\Cache $cache
 	 */
@@ -57,6 +61,16 @@ class ImageHelper extends Object {
 		$this->cache = $cache->derive('images');
 		$this->baseUrl = $baseUrl;
 		$this->tempDir = $tempDir;
+		$this->cacheExpireTimestamp = 24*60*60; // default value is 1 day
+	}
+
+	/**
+	 * Setup timestamp for cache expiration for each image.
+	 *
+	 * @param timestamp|int $timestamp
+	 */
+	public function setCacheExpireTimestamp($timestamp) {
+		$this->cacheExpireTimestamp = $timestamp;
 	}
 
 	/**
@@ -105,10 +119,7 @@ class ImageHelper extends Object {
 			return array($original, null, null); // check if file exist
 		}
 
-		////////////////////////////////////////
 		// check internal cache for image
-		////////////////////////////////////////
-
 		$subfolder = $this->tempDir;
 		$subfolder_absolute_path = $public_root . '/' . $subfolder;
 		$cache = $this->cache;
@@ -120,18 +131,12 @@ class ImageHelper extends Object {
 
 		$info = pathinfo($original_absolute_path);
 
-		////////////////////////////////////////
 		// read dimensions
-		////////////////////////////////////////
-
 		$dim = explode('x', $dimensions, null);
 		$newWidth = isset($dim[0]) ? $dim[0] : null;
 		$newHeight = isset($dim[1]) ? $dim[1] : null;
 
-		////////////////////////////////////////
 		// check public cache directory
-		////////////////////////////////////////
-
 		if (!is_dir($subfolder_absolute_path) || !is_writable($subfolder_absolute_path)) {
 			throw new InvalidStateException('Thumbnail path ' . $subfolder_absolute_path . ' does not exists or is not writable.');
 		}
@@ -148,20 +153,14 @@ class ImageHelper extends Object {
 			$cache_file = Strings::webalize(basename($original, '.' . $info['extension']) . '-' . $image->getWidth() . 'x' . $image->getHeight()) . '.' . $info['extension'];
 			$image->save($cache_path . '/' . $cache_file);
 
-			////////////////////////////////////////
 			// resize image name
-			////////////////////////////////////////
-
 			$resize = $subfolder . '/' . md5(dirname($original)) . '/' . $cache_file;
 			$result = array($resize, $image->getWidth(), $image->getHeight());
 
-			////////////////////////////////////////
 			// save result to internal cache
-			////////////////////////////////////////
-
 			$cache->save($key, $result, array(
-				'files' => $original,
-				'expire' => time() + (24 * 60 * 60), // Expirovat stačí jednou za den
+				Cache::FILES => $original,
+				Cache::EXPIRATION => time() + $this->cacheExpireTimestamp,
 			));
 
 			return $result;
