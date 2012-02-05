@@ -2,26 +2,27 @@
 /**
  * For the full copyright and license information, please view
  * the file license.txt that was distributed with this source code.
- * 
+ *
  * @author Martin Štekl <martin.stekl@gmail.com>
  * @since 2011.06.26
  * @license MIT
  * @copyright Copyright (c) 2011, 2012 Martin Štekl <martin.stekl@gmail.com>
  */
 
-namespace steky\nette\gallery\controls;
+namespace steky\nette\gallery\Control;
 use \Nette\ComponentModel\Container,
 	\Nette\InvalidArgumentException,
+	\steky\nette\gallery\AbstractControl,
 	\steky\nette\gallery\IDataProvider,
-	\steky\nette\gallery\models\AbstractGroup,
-	\steky\nette\gallery\models\AbstractItem,
+	\steky\nette\gallery\Model\AbstractGroup,
+	\steky\nette\gallery\Model\AbstractItem,
 	\ImageHelper,
 	\VisualPaginator;
 
 /**
  * Contains basic implementation for group control.
  */
-class GroupControl extends AbstractGalleryControl {
+class GroupControl extends AbstractControl {
 
 	const DEFAULT_ITEMS_PER_PAGE = 25;
 
@@ -41,7 +42,7 @@ class GroupControl extends AbstractGalleryControl {
 	 * @var int Namespace for groups
 	 */
 	protected $namespace_id;
-	
+
 	/**
 	 * @var array
 	 */
@@ -60,7 +61,7 @@ class GroupControl extends AbstractGalleryControl {
 		parent::__construct($parent, $name, $imageHelper, $groupModel, $itemModel);
 		$this->actionViewItems = $actionViewItems;
 		$this->namespaces = $namespaces;
-		
+
 		$this->templateFile = __DIR__ . '/groups.latte';
 		$this->snippetName = 'groupTable';
 		$this->namespace_id = AbstractGroup::DEFAULT_NAMESPACE_ID;

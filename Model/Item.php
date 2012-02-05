@@ -2,14 +2,14 @@
 /**
  * For the full copyright and license information, please view
  * the file license.txt that was distributed with this source code.
- * 
+ *
  * @author Martin Štekl <martin.stekl@gmail.com>
  * @since 2011.06.26
  * @license MIT
  * @copyright Copyright (c) 2011, 2012 Martin Štekl <martin.stekl@gmail.com>
  */
 
-namespace steky\nette\gallery\models;
+namespace steky\nette\gallery\Model;
 use \Nette\InvalidStateException,
 	\Nette\InvalidArgumentException,
 	\Nette\Http\FileUpload;
@@ -36,7 +36,7 @@ class Item extends AbstractItem {
 		if (!($difference = array_diff(static::$basicColumns, array_keys($insert_data)))) {
 			throw new InvalidStateException('Missing required fields ['.implode(', ', $difference).'].');
 		}
-		
+
 		$file = $data[static::FILE_KEY];
 		if (!$file->isImage()) {
 			throw new InvalidArgumentException('Given file is not image. It is [' . $file->getContentType() . '].');
@@ -49,15 +49,15 @@ class Item extends AbstractItem {
 		$file->move($filepath);
 
 		$insert_data['filename'] = $filename;
-		
+
 		$photo_id = $this->dataProvider->createItem($insert_data, $data['gallery_id']);
-		
+
 		return $photo_id;
 	}
 
 	/**
 	 * Updates photo. It means only extended info. New image should be created, not updated.
-	 * 
+	 *
 	 * @param array $data
 	 */
 	public function update(array $data) {
@@ -67,22 +67,22 @@ class Item extends AbstractItem {
 
 		$photo_id = $data['photo_id'];
 		$previous_data = $this->getById($photo_id);
-		
+
 		$update_data = array();
 		foreach ($data as $key => $value) {
 			if ($key != static::FILE_KEY && $previous_data[$key] != $value) {
 				$update_data[$key] = $value;
 			}
 		}
-		
+
 		$this->dataProvider->updateItem($photo_id, $update_data);
-		
+
 		return $photo_id;
 	}
 
 	/**
 	 * Detects extension by file content type. (Only for images.)
-	 * 
+	 *
 	 * @param HttpUploadedFile $file
 	 * @return string Extension (without dot)
 	 */
@@ -121,7 +121,7 @@ class Item extends AbstractItem {
 
 	/**
 	 * Deletes photo file.
-	 * 
+	 *
 	 * @param int $id Photo ID
 	 */
 	protected function deleteFile($id) {
@@ -152,7 +152,7 @@ class Item extends AbstractItem {
 
 	/**
 	 * Swaps ordering between given photos.
-	 * 
+	 *
 	 * @param int $photo_id_1 Photo ID
 	 * @param int $photo_id_2 Photo ID
 	 */

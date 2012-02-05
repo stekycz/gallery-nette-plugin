@@ -2,25 +2,24 @@
 /**
  * For the full copyright and license information, please view
  * the file license.txt that was distributed with this source code.
- * 
+ *
  * @author Martin Štekl <martin.stekl@gmail.com>
  * @since 2011.06.28
  * @license MIT
  * @copyright Copyright (c) 2011, 2012 Martin Štekl <martin.stekl@gmail.com>
  */
 
-namespace steky\nette\gallery\controls;
+namespace steky\nette\gallery;
 use \Nette\Application\UI\Control,
 	\Nette\ComponentModel\Container,
-	\steky\nette\gallery\IDataProvider,
-	\steky\nette\gallery\models\AbstractGroup,
-	\steky\nette\gallery\models\AbstractItem,
+	\steky\nette\gallery\Model\AbstractGroup,
+	\steky\nette\gallery\Model\AbstractItem,
 	\ImageHelper;
 
 /**
  * Defines basic functionality for controls.
  */
-abstract class AbstractGalleryControl extends Control {
+abstract class AbstractControl extends Control {
 
 	/**
 	 * @var bool Show admin environment?
@@ -38,7 +37,7 @@ abstract class AbstractGalleryControl extends Control {
 	 * @var ImageHelper Helps with work around pictures
 	 */
 	protected $imageHelper;
-	
+
 	/**
 	 * @var steky\nette\gallery\models\AbstractGroup
 	 */
