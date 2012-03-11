@@ -54,8 +54,7 @@ abstract class AbstractControl extends Control {
 	 * @param steky\nette\gallery\models\AbstractGroup $groupModel
 	 * @param steky\nette\gallery\models\AbstractItem $itemModel
 	 */
-	public function __construct(Container $parent, $name, ImageHelper $imageHelper, AbstractGroup $groupModel, AbstractItem $itemModel) {
-		parent::__construct($parent, $name);
+	public function __construct(ImageHelper $imageHelper, AbstractGroup $groupModel, AbstractItem $itemModel) {
 		$this->imageHelper = $imageHelper;
 		$this->groupModel = $groupModel;
 		$this->itemModel = $itemModel;
@@ -94,17 +93,5 @@ abstract class AbstractControl extends Control {
 	 * Renders control.
 	 */
 	abstract public function render();
-
-	/**
-	 * Toggles activity/visibility.
-	 *
-	 * @param int $id
-	 */
-	abstract public function handleToggleActive($id);
-
-	/**
-	 * @param int $id
-	 */
-	abstract public function handleDelete($id);
 
 }

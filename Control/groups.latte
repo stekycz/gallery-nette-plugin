@@ -1,66 +1,19 @@
-{*
+{**
  * For the full copyright and license information, please view
  * the file license.txt that was distributed with this source code.
- * 
+ *
  * @author Martin Štekl <martin.stekl@gmail.com>
  * @since 2011.06.26
  * @license MIT
  * @copyright Copyright (c) 2011, 2012 Martin Štekl <martin.stekl@gmail.com>
  *}
 
-{*
- * Template for group control.
- *
- * @param string $actionViewItems Action for show items in group
- * @param string $actionEditGroup Action for group edit
- * @param bool $isAdmin If it is TRUE show admin buttons
- * @param string $namespace Namespace name for shown groups
- * @param array $groups Data for groups
+{**
+ * Template for groups control.
  *}
-
-{if $groups}
-{snippet groupTable}
-<table class="groups">
-	<colgroup>
-		<col style="width: 165px;" />
-		<col style="width: 165px;" />
-		<col style="width: 165px;" />
-		<col style="width: 165px;" />
-		<col style="width: 165px;" />
-	</colgroup>
-	<tbody>
-		<tr>
-			{foreach $groups as $group}
-				{if $iterator->getCounter() > 1 && $iterator->getCounter() % 5 == 1}
-		</tr>
-		<tr>
-				{/if}
-			<td title="{$group['description']} ({$group['photo_count']} fotek)">
-				<a href="{plink $actionViewItems, id => $group['gallery_id']}">
-					{? $image_path = '../files/gallery/' . ($namespace ? $namespace.'/' : '') . $group['gallery_id'].'/'.$group['title_filename']}
-					{$image_path|resize:'120x90'}
-					<span>{$group['title']}</span>
-				</a>
-				{if $isAdmin}
-				<span class="actions">
-					<a n:href="toggleActive, id => $group['gallery_id']" class="ajax" title="Změnit viditelnost">
-						<img src="{$baseUri}/images/{if $group['is_active']}eye.png{else}eye-close.png{/if}" alt="Změnit viditelnost">
-					</a>
-					<a href="{plink $actionEditGroup, id => $group['gallery_id']}" title="Upravit">
-						<img src="{$baseUri}/images/pencil.png" alt="Upravit">
-					</a>
-					<a n:href="delete, id => $group['gallery_id']" class="ajax" title="Smazat">
-						<img src="{$baseUri}/images/cross.png" alt="Smazat">
-					</a>
-				</span>
-				{/if}
-			</td>
-			{/foreach}
-		</tr>
-	</tbody>
-</table>
-{control paginator}
+{snippet}
+	{foreach $control->components as $control}
+		{control $control}
+	{/foreach}
+	{control paginator}
 {/snippet}
-{else}
-<p>No group was found.</p>
-{/if}

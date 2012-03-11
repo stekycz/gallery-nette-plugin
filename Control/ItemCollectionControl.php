@@ -10,8 +10,7 @@
  */
 
 namespace steky\nette\gallery\Control;
-use \Nette\ComponentModel\Container,
-	\steky\nette\gallery\AbstractControl,
+use \steky\nette\gallery\AbstractControl,
 	\steky\nette\gallery\IDataProvider,
 	\steky\nette\gallery\Model\AbstractGroup,
 	\steky\nette\gallery\Model\AbstractItem,
@@ -20,7 +19,7 @@ use \Nette\ComponentModel\Container,
 /**
  * Contains basic implementation for item control.
  */
-class ItemControl extends AbstractControl {
+class ItemCollectionControl extends AbstractControl {
 
 	/**
 	 * @var int ID for group in which are shown items
@@ -28,15 +27,13 @@ class ItemControl extends AbstractControl {
 	protected $group_id;
 
 	/**
-	 * @param Nette\ComponentModel\Container $parent
-	 * @param string $name
 	 * @param ImageHelper $imageHelper
 	 * @param steky\nette\gallery\models\AbstractGroup $groupModel
 	 * @param steky\nette\gallery\models\AbstractItem $itemModel
 	 * @param int $group_id
 	 */
-	public function __construct(Container $parent, $name, ImageHelper $imageHelper, AbstractGroup $groupModel, AbstractItem $itemModel, $group_id) {
-		parent::__construct($parent, $name, $imageHelper, $groupModel, $itemModel);
+	public function __construct(ImageHelper $imageHelper, AbstractGroup $groupModel, AbstractItem $itemModel, $group_id) {
+		parent::__construct($imageHelper, $groupModel, $itemModel);
 		$this->group_id = $group_id;
 		$this->templateFile = __DIR__ . '/items.latte';
 		$this->snippetName = 'itemTable';
