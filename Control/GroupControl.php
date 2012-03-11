@@ -49,13 +49,13 @@ class GroupControl extends AbstractControl {
 	private $namespaces;
 
 	/**
-	 * @param Nette\ComponentModel\Container $parent
+	 * @param \Nette\ComponentModel\Container $parent
 	 * @param string $name
-	 * @param ImageHelper $imageHelper
-	 * @param steky\nette\gallery\models\AbstractGroup $groupModel
-	 * @param steky\nette\gallery\models\AbstractItem $itemModel
-	 * @param array $namespaces Exists namespaces in associative array
-	 * @param string $actionViewItems Action to view all items in group
+	 * @param \ImageHelper $imageHelper
+	 * @param \steky\nette\gallery\Model\AbstractGroup $groupModel
+	 * @param \steky\nette\gallery\Model\AbstractItem $itemModel
+	 * @param string[] $namespaces
+	 * @param string $actionViewItems
 	 */
 	public function __construct(Container $parent, $name, ImageHelper $imageHelper, AbstractGroup $groupModel, AbstractItem $itemModel, array $namespaces, $actionViewItems) {
 		parent::__construct($parent, $name, $imageHelper, $groupModel, $itemModel);
@@ -69,8 +69,9 @@ class GroupControl extends AbstractControl {
 
 	/**
 	 * @param bool $admin
-	 * @param string $actionEditGroup Action to edit group
-	 * @return steky\nette\gallery\controls\GroupControl
+	 * @param string|null $actionEditGroup Action to edit group
+	 * @return \steky\nette\gallery\AbstractControl
+	 * @throws \Nette\InvalidArgumentException
 	 */
 	public function setAdmin($admin, $actionEditGroup = null) {
 		if ($actionEditGroup === null) {
@@ -83,8 +84,9 @@ class GroupControl extends AbstractControl {
 	/**
 	 * Setup namespace for current control.
 	 *
-	 * @param string $namsespace_id
-	 * @return steky\nette\gallery\controls\GroupControl Fluent interface
+	 * @param int $namespace_id
+	 * @return \steky\nette\gallery\controls\GroupControl Fluent interface
+	 * @throws \Nette\InvalidArgumentException
 	 */
 	public function useNamespace($namespace_id) {
 		if (!in_array($namespace_id, array_keys($this->namespaces))) {
@@ -95,6 +97,9 @@ class GroupControl extends AbstractControl {
 		return $this;
 	}
 
+	/**
+	 * @param int $groups_per_page
+	 */
 	public function render($groups_per_page = self::DEFAULT_ITEMS_PER_PAGE) {
 		$this->template->actionViewItems = $this->actionViewItems;
 		$this->template->actionEditGroup = $this->actionEditGroup;
@@ -110,24 +115,37 @@ class GroupControl extends AbstractControl {
 			$groupModel->useNamespace($this->namespace_id);
 		}
 
-		$this->template->groups = $groupModel
-				->getAll($paginator->page, $paginator->itemsPerPage, $this->isAdmin);
+		$this->template->groups = $groupModel->getAll($paginator->page, $paginator->itemsPerPage, $this->isAdmin);
 		$this->template->setFile($this->templateFile);
 		$this->template->render();
 	}
 
+	/**
+	 * @param int $id
+	 */
 	public function handleToggleActive($id) {
-		$this->template->setFile($this->templateFile);
-		$this->groupModel->toggleActive($id);
-		$this->invalidateControl($this->snippetName);
+		if ($this->presenter->isAjax()) {
+			$this->template->setFile($this->templateFile);
+			$this->groupModel->toggleActive($id);
+			$this->invalidateControl($this->snippetName);
+		}
 	}
 
+	/**
+	 * @param int $id
+	 */
 	public function handleDelete($id) {
-		$this->template->setFile($this->templateFile);
-		$this->groupModel->delete($id);
-		$this->invalidateControl($this->snippetName);
+		if ($this->presenter->isAjax()) {
+			$this->template->setFile($this->templateFile);
+			$this->groupModel->delete($id);
+			$this->invalidateControl($this->snippetName);
+		}
 	}
 
+	/**
+	 * @param string $name
+	 * @return \VisualPaginator
+	 */
 	public function createComponentPaginator($name) {
 		$vp = new VisualPaginator($this, $name);
 		$paginator = $vp->getPaginator();

@@ -37,7 +37,7 @@ abstract class AbstractGroup extends AbstractModel {
 	protected $namespace_id;
 
 	/**
-	 * @param steky\nette\gallery\IDataProvider $dataProvider
+	 * @param \steky\nette\gallery\IDataProvider $dataProvider
 	 * @param string $basePath
 	 */
 	public function __construct(IDataProvider $dataProvider, $basePath) {
@@ -49,8 +49,8 @@ abstract class AbstractGroup extends AbstractModel {
 	 * Setup namespace for current model. If directory for namespace does not
 	 * exists creates it.
 	 *
-	 * @param int $namespace_id
-	 * @return steky\nette\gallery\models\AbstractGroup Fluent interface
+	 * @param int $namsespace_id
+	 * @return \steky\nette\gallery\Model\AbstractGroup Fluent interface
 	 */
 	public function useNamespace($namsespace_id) {
 		$this->namespace_id = $namsespace_id;
@@ -92,6 +92,8 @@ abstract class AbstractGroup extends AbstractModel {
 	 * Returns all groups which are not deleted. If admin is true returns
 	 * invisible groups too.
 	 *
+	 * @param int $page
+	 * @param int $itemPerPage
 	 * @param bool $admin
 	 * @return array
 	 */

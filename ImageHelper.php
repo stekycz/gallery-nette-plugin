@@ -34,7 +34,7 @@ use \Nette\Object,
 class ImageHelper extends Object {
 
 	/**
-	 * @var Nette\Caching\Cache
+	 * @var \Nette\Caching\Cache
 	 */
 	protected $cache;
 
@@ -54,14 +54,15 @@ class ImageHelper extends Object {
 	protected $cacheExpireTimestamp;
 
 	/**
+	 * @param \Nette\Caching\Cache $cache
 	 * @param string $baseUrl Absolute web URL
-	 * @param Nette\Caching\Cache $cache
+	 * @param string $tempDir Temporary directory path
 	 */
 	public function __construct(Cache $cache, $baseUrl, $tempDir) {
 		$this->cache = $cache->derive('images');
 		$this->baseUrl = $baseUrl;
 		$this->tempDir = $tempDir;
-		$this->cacheExpireTimestamp = 24*60*60; // default value is 1 day
+		$this->cacheExpireTimestamp = 24 * 60 * 60; // default value is 1 day
 	}
 
 	/**
@@ -74,11 +75,11 @@ class ImageHelper extends Object {
 	}
 
 	/**
-	 * Helper for simple image tag with resize
-	 *
 	 * @param string $filename
-	 * @param int $width
-	 * @param int $height
+	 * @param string $dimensions
+	 * @param string|null $alt
+	 * @param string|null $title
+	 * @return \Nette\Utils\Html
 	 */
 	public function resize($filename, $dimensions = '120x90', $alt = null, $title = null) {
 		$info = pathinfo($filename);
@@ -88,16 +89,20 @@ class ImageHelper extends Object {
 
 		list($src, $width, $height) = $this->resizeImageWithCache($filename, $dimensions);
 
-		return Html::el('img')->src($this->baseUrl . $src)->width($width)->height($height)->alt($alt)->title($title)->class('thumbnail');
+		return Html::el('img')->src($this->baseUrl . $src)->width($width)->height($height)->alt($alt)->title($title)
+			->class('thumbnail');
 	}
 
 	/**
-	 * Render gallery image with anchor to bigger sized image
+	 * Render gallery image with anchor to bigger sized image.
+	 *
 	 * @param string $filename
+	 * @param string|null $alt
+	 * @param string|null $title
+	 * @param string|null $rel
 	 * @param string $dimensions
-	 * @param string $alt
-	 * @param string $title
-	 * @param string $big
+	 * @param string $full_dimensions
+	 * @return \Nette\Utils\Html
 	 */
 	public function gallery($filename, $alt = null, $title = null, $rel = null, $dimensions = '120x90', $full_dimensions = '640x480') {
 		$img = $this->resize($filename, $dimensions, $alt, $title);
@@ -106,12 +111,13 @@ class ImageHelper extends Object {
 	}
 
 	/**
-	 * Resize image and save thumbs to cache
+	 * Resize image and save thumbs to cache.
+	 *
 	 * @param string $original
 	 * @param string $dimensions
-	 * @param string $subfolder
 	 * @param string $public_root
 	 * @return array
+	 * @throws \Nette\InvalidStateException
 	 */
 	public function resizeImageWithCache($original, $dimensions, $public_root = WWW_DIR) {
 		$original_absolute_path = $public_root . '/' . $original;
@@ -159,9 +165,9 @@ class ImageHelper extends Object {
 
 			// save result to internal cache
 			$cache->save($key, $result, array(
-				Cache::FILES => $original,
-				Cache::EXPIRATION => time() + $this->cacheExpireTimestamp,
-			));
+			                                 Cache::FILES => $original,
+			                                 Cache::EXPIRATION => time() + $this->cacheExpireTimestamp,
+			                            ));
 
 			return $result;
 		} catch (Exception $e) {

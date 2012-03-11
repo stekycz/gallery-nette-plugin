@@ -18,10 +18,16 @@ use \Nette\InvalidStateException,
  */
 class Group extends AbstractGroup {
 
+	/**
+	 * Creates new group.
+	 *
+	 * @param array $data Data for new group
+	 * @return int|string GroupID
+	 * @throws \Nette\InvalidArgumentException|\Nette\InvalidStateException
+	 */
 	public function create(array $data) {
 		$insert_data = array(
-			'is_active' => true,
-			'namespace_id' => static::DEFAULT_NAMESPACE_ID,
+			'is_active' => true, 'namespace_id' => static::DEFAULT_NAMESPACE_ID,
 		);
 
 		foreach ($data as $key => $value) {
@@ -32,9 +38,8 @@ class Group extends AbstractGroup {
 			}
 		}
 
-		/* @var $difference array */
 		if (!($difference = array_diff(static::$basicColumns, array_keys($insert_data)))) {
-			throw new InvalidStateException('Missing required fields ['.implode(', ', $difference).'].');
+			throw new InvalidStateException('Missing required fields [' . implode(', ', $difference) . '].');
 		}
 
 		if ($this->namespace_id != static::DEFAULT_NAMESPACE_ID) {
@@ -58,6 +63,8 @@ class Group extends AbstractGroup {
 	 * info does not exist it will be inserted.
 	 *
 	 * @param array $data
+	 * @return int|string
+	 * @throws \Nette\InvalidArgumentException
 	 */
 	public function update(array $data) {
 		if (!array_key_exists('gallery_id', $data)) {
@@ -90,7 +97,7 @@ class Group extends AbstractGroup {
 	/**
 	 * Inserts given files into group by group_id.
 	 *
-	 * @param array $files
+	 * @param \Nette\Http\FileUpload[] $files
 	 * @param int $group_id
 	 */
 	protected function insertFiles(array $files, $group_id) {
@@ -105,10 +112,16 @@ class Group extends AbstractGroup {
 		}
 	}
 
+	/**
+	 * @param int $id
+	 */
 	public function toggleActive($id) {
 		$this->dataProvider->toggleActiveGroup($id);
 	}
 
+	/**
+	 * @param int $id
+	 */
 	public function delete($id) {
 		$this->deleteFolder($id);
 		$this->dataProvider->deleteGroup($id);
@@ -132,26 +145,50 @@ class Group extends AbstractGroup {
 		}
 	}
 
+	/**
+	 * @return string
+	 */
 	public function getPathNamespace() {
 		return $this->basePath . '/' . $this->getCurrentNamespaceName();
 	}
 
+	/**
+	 * @return string
+	 */
 	protected function getCurrentNamespaceName() {
 		return $this->dataProvider->namespaces[$this->namespace_id];
 	}
 
+	/**
+	 * @param int $id GroupID
+	 * @return string
+	 */
 	public function getPathGallery($id) {
 		return $this->getPathNamespace() . '/' . $id;
 	}
 
+	/**
+	 * @param bool $admin
+	 * @return int
+	 */
 	public function getCount($admin = false) {
 		return $this->dataProvider->getGroupCount($this->namespace_id, $admin);
 	}
 
+	/**
+	 * @param int $page
+	 * @param int $itemPerPage
+	 * @param bool $admin
+	 * @return array
+	 */
 	public function getAll($page = 1, $itemPerPage = 25, $admin = false) {
 		return $this->dataProvider->getAllGroups($this->namespace_id, $admin, $page, $itemPerPage);
 	}
 
+	/**
+	 * @param int $id
+	 * @return array
+	 */
 	public function getById($id) {
 		return $this->dataProvider->getGroupById($id);
 	}

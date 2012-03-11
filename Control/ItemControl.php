@@ -28,11 +28,11 @@ class ItemControl extends AbstractControl {
 	protected $group_id;
 
 	/**
-	 * @param Nette\ComponentModel\Container $parent
+	 * @param \Nette\ComponentModel\Container $parent
 	 * @param string $name
-	 * @param ImageHelper $imageHelper
-	 * @param steky\nette\gallery\models\AbstractGroup $groupModel
-	 * @param steky\nette\gallery\models\AbstractItem $itemModel
+	 * @param \ImageHelper $imageHelper
+	 * @param \steky\nette\gallery\Model\AbstractGroup $groupModel
+	 * @param \steky\nette\gallery\Model\AbstractItem $itemModel
 	 * @param int $group_id
 	 */
 	public function __construct(Container $parent, $name, ImageHelper $imageHelper, AbstractGroup $groupModel, AbstractItem $itemModel, $group_id) {
@@ -52,16 +52,26 @@ class ItemControl extends AbstractControl {
 		$this->template->render();
 	}
 
+	/**
+	 * @param int $id
+	 */
 	public function handleToggleActive($id) {
-		$this->template->setFile($this->templateFile);
-		$this->itemModel->toggleActive($id);
-		$this->invalidateControl($this->snippetName);
+		if ($this->presenter->isAjax()) {
+			$this->template->setFile($this->templateFile);
+			$this->itemModel->toggleActive($id);
+			$this->invalidateControl($this->snippetName);
+		}
 	}
 
+	/**
+	 * @param int $id
+	 */
 	public function handleDelete($id) {
-		$this->template->setFile($this->templateFile);
-		$this->itemModel->delete($id);
-		$this->invalidateControl($this->snippetName);
+		if ($this->presenter->isAjax()) {
+			$this->template->setFile($this->templateFile);
+			$this->itemModel->delete($id);
+			$this->invalidateControl($this->snippetName);
+		}
 	}
 
 	/**
@@ -70,9 +80,11 @@ class ItemControl extends AbstractControl {
 	 * @param int $id
 	 */
 	public function handleMoveLeft($id) {
-		$this->template->setFile($this->templateFile);
-		$this->itemModel->moveLeft($id);
-		$this->invalidateControl($this->snippetName);
+		if ($this->presenter->isAjax()) {
+			$this->template->setFile($this->templateFile);
+			$this->itemModel->moveLeft($id);
+			$this->invalidateControl($this->snippetName);
+		}
 	}
 
 	/**
@@ -81,9 +93,11 @@ class ItemControl extends AbstractControl {
 	 * @param int $id
 	 */
 	public function handleMoveRight($id) {
-		$this->template->setFile($this->templateFile);
-		$this->itemModel->moveRight($id);
-		$this->invalidateControl($this->snippetName);
+		if ($this->presenter->isAjax()) {
+			$this->template->setFile($this->templateFile);
+			$this->itemModel->moveRight($id);
+			$this->invalidateControl($this->snippetName);
+		}
 	}
 
 }

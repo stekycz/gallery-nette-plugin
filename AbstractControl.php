@@ -34,25 +34,25 @@ abstract class AbstractControl extends Control {
 	 */
 	protected $snippetName;
 	/**
-	 * @var ImageHelper Helps with work around pictures
+	 * @var \ImageHelper Helps with work around pictures
 	 */
 	protected $imageHelper;
 
 	/**
-	 * @var steky\nette\gallery\models\AbstractGroup
+	 * @var \steky\nette\gallery\models\AbstractGroup
 	 */
 	protected $groupModel;
 	/**
-	 * @var steky\nette\gallery\models\AbstractItem
+	 * @var \steky\nette\gallery\models\AbstractItem
 	 */
 	protected $itemModel;
 
 	/**
-	 * @param Nette\ComponentModel\Container $parent
+	 * @param \Nette\ComponentModel\Container $parent
 	 * @param string $name
-	 * @paramm ImageHelper $imageHelper
-	 * @param steky\nette\gallery\models\AbstractGroup $groupModel
-	 * @param steky\nette\gallery\models\AbstractItem $itemModel
+	 * @param \ImageHelper $imageHelper
+	 * @param \steky\nette\gallery\Model\AbstractGroup $groupModel
+	 * @param \steky\nette\gallery\Model\AbstractItem $itemModel
 	 */
 	public function __construct(Container $parent, $name, ImageHelper $imageHelper, AbstractGroup $groupModel, AbstractItem $itemModel) {
 		parent::__construct($parent, $name);
@@ -63,7 +63,7 @@ abstract class AbstractControl extends Control {
 
 	/**
 	 * @param bool $admin
-	 * @return AbstractGalleryControl
+	 * @return \steky\nette\gallery\AbstractControl
 	 */
 	public function setAdmin($admin) {
 		$this->isAdmin = $admin;

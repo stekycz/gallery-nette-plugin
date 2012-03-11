@@ -18,7 +18,7 @@ use \Nette\Object;
 abstract class AbstractModel extends Object {
 
 	/**
-	 * @var IDataProvider
+	 * @var \steky\nette\gallery\IDataProvider
 	 */
 	protected $dataProvider;
 	/**
@@ -29,7 +29,7 @@ abstract class AbstractModel extends Object {
 	/**
 	 * Creates new instance.
 	 *
-	 * @param IDataProvider $dataProvider
+	 * @param \steky\nette\gallery\IDataProvider $dataProvider
 	 * @param string $basePath
 	 */
 	public function __construct(IDataProvider $dataProvider, $basePath) {
