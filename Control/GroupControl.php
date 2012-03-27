@@ -29,7 +29,7 @@ class GroupControl extends AbstractControl {
 	protected $actionEditGroup = null;
 
 	/**
-	 * @var array Groupd data
+	 * @var array Group data
 	 */
 	protected $group;
 
