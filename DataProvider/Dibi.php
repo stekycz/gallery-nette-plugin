@@ -209,13 +209,13 @@ class Dibi extends Nette\Object implements gallery\IDataProvider {
 	public function getItemsByGroup($group_id, $admin = false) {
 		$photo_array = $this->connection->fetchAll('
 			SELECT
-				tgp.photo_id,
-				tgp.is_active,
-				tgp.gallery_id,
-				tgp.filename,
-				tgp.title
+				tgp.photo_id, tgp.is_active, tgp.gallery_id,
+				tgp.filename, tgp.title,
+				tg.namespace_id, tgn.name AS namespace
 			FROM gallery_photo AS tgp
-			WHERE tgp.gallery_id = %s', $group_id, '
+			LEFT JOIN gallery AS tg ON (tg.gallery_id = tgp.gallery_id)
+			LEFT JOIN gallery_namespace AS tgn ON (tgn.namespace_id = tg.namespace_id)
+			WHERE tg.gallery_id = %s', $group_id, '
 				%SQL', (!$admin ? 'AND tgp.is_active = 1' : ''), '
 			ORDER BY tgp.ordering
 		');
