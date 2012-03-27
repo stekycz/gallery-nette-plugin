@@ -88,7 +88,7 @@ class ImageHelper extends Object {
 
 		list($src, $width, $height) = $this->resizeImageWithCache($filename, $dimensions);
 
-		return Html::el('img')->src($this->baseUrl . $src)->width($width)->height($height)->alt($alt)->title($title)->class('thumbnail');
+		return Html::el('img')->src($this->baseUrl . $src)->width($width)->height($height)->alt($alt)->title($title);
 	}
 
 	/**

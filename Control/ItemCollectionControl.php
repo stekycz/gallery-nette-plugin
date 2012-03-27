@@ -36,51 +36,21 @@ class ItemCollectionControl extends AbstractControl {
 		parent::__construct($imageHelper, $groupModel, $itemModel);
 		$this->group_id = $group_id;
 		$this->templateFile = __DIR__ . '/items.latte';
-		$this->snippetName = 'itemTable';
 	}
 
 	public function render() {
-		$this->template->isAdmin = $this->isAdmin;
+		$this->template->setFile($this->templateFile);
 
 		$this->template->group = $this->groupModel->getById($this->group_id);
 
-		$this->template->items = $this->itemModel->getByGallery($this->group_id, $this->isAdmin);
-		$this->template->setFile($this->templateFile);
+		$items = $this->itemModel->getByGallery($this->group_id, $this->isAdmin);
+		foreach ($items as $item) {
+			$control = new ItemControl($this->imageHelper, $this->groupModel, $this->itemModel, $item);
+			$control->setAdmin($this->isAdmin);
+			$this->addComponent($control, 'item_'.sha1(serialize($item)));
+		}
+
 		$this->template->render();
-	}
-
-	public function handleToggleActive($id) {
-		$this->template->setFile($this->templateFile);
-		$this->itemModel->toggleActive($id);
-		$this->invalidateControl($this->snippetName);
-	}
-
-	public function handleDelete($id) {
-		$this->template->setFile($this->templateFile);
-		$this->itemModel->delete($id);
-		$this->invalidateControl($this->snippetName);
-	}
-
-	/**
-	 * Changes ordering of file to left.
-	 *
-	 * @param int $id
-	 */
-	public function handleMoveLeft($id) {
-		$this->template->setFile($this->templateFile);
-		$this->itemModel->moveLeft($id);
-		$this->invalidateControl($this->snippetName);
-	}
-
-	/**
-	 * Changes ordering of file to right.
-	 *
-	 * @param int $id
-	 */
-	public function handleMoveRight($id) {
-		$this->template->setFile($this->templateFile);
-		$this->itemModel->moveRight($id);
-		$this->invalidateControl($this->snippetName);
 	}
 
 }

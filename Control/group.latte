@@ -16,23 +16,29 @@
  * @param bool $isAdmin If it is TRUE show admin buttons
  * @param array $group Data for group
  *}
-{snippet}
-	<a href="{plink $actionViewItems, id => $group['gallery_id']}" title="{$group['description']} ({$group['photo_count']} fotek)">
+<li n:snippet="group" class="span2 thumbnail">
+	<a href="{plink $actionViewItems, id => $group['gallery_id']}">
 		{? $image_path = '../files/gallery/' . ($group['namespace'] ? $group['namespace'].'/' : '') . $group['gallery_id'].'/'.$group['title_filename']}
-		{$image_path|resize:'120x90'}
-		<span>{$group['title']}</span>
+		{$image_path|resize:'170x125'}
 	</a>
-	{if $isAdmin}
-	<span class="actions">
-		<a n:href="toggleActive, id => $group['gallery_id']" class="ajax" title="Změnit viditelnost">
-			<img src="{$baseUri}/images/{if $group['is_active']}eye.png{else}eye-close.png{/if}" alt="Změnit viditelnost">
-		</a>
-		<a href="{plink $actionEditGroup, id => $group['gallery_id']}" title="Upravit">
-			<img src="{$baseUri}/images/pencil.png" alt="Upravit">
-		</a>
-		<a n:href="delete, id => $group['gallery_id']" class="ajax" title="Smazat">
-			<img src="{$baseUri}/images/cross.png" alt="Smazat">
-		</a>
-	</span>
-	{/if}
-{/snippet}
+	<div class="caption">
+		<h5>{$group['title']}</h5>
+		<p>
+			{if $group['description']}{$group['description']}<br />{/if}
+			{$group['photo_count']} fotek
+		</p>
+		{if $isAdmin}
+		<p class="btn-group">
+			<a n:href="toggleActive, id => $group['gallery_id']" class="ajax btn" title="Změnit viditelnost">
+				<i class="icon-eye-{if $group['is_active']}open{else}close{/if}"></i>
+			</a>
+			<a href="{plink $actionEditGroup, id => $group['gallery_id']}" class="btn" title="Upravit">
+				<i class="icon-pencil"></i>
+			</a>
+			<a n:href="delete, id => $group['gallery_id']" class="ajax btn" title="Smazat">
+				<i class="icon-remove"></i>
+			</a>
+		</p>
+		{/if}
+	</div>
+</li>

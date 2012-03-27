@@ -9,61 +9,17 @@
  *}
 
 {**
- * Template for item control.
+ * Template for items control.
  *
- * @param bool $isAdmin If it is TRUE show admin buttons
  * @param array $group Data row with informations about group
- * @param array $items Data for items
  *}
 
-{if $items}
 <h2>{$group['title']}</h2>
 
 <p>{$group['description']}</p>
 
-{snippet itemTable}
-<table class="items" id="group-{!$group['gallery_id']}">
-	<colgroup>
-		<col style="width: 165px;" />
-		<col style="width: 165px;" />
-		<col style="width: 165px;" />
-		<col style="width: 165px;" />
-		<col style="width: 165px;" />
-	</colgroup>
-	<tbody>
-		<tr>
-				{foreach $items as $item}
-				{if $iterator->getCounter() > 1 && $iterator->getCounter() % 5 == 1}
-		</tr>
-		<tr>
-				{/if}
-			<td>
-				{? $image_path = '../files/gallery/' . $group['namespace'] .'/' . $item['gallery_id'].'/'.$item['filename']}
-				{$image_path|gallery:$item['title']:$item['title']:'group-'.$item['gallery_id']}
-				{if $isAdmin}
-				<span class="actions">
-				{if !$iterator->isFirst()}
-				<a n:href="moveLeft, id => $item['photo_id']" class="ajax" title="Vlevo">
-					<img src="{$baseUri}/images/arrow-180-small.png" alt="Vlevo">
-				</a>
-				{/if}
-				<a n:href="toggleActive, id => $item['photo_id']" class="ajax" title="Změnit viditelnost">
-					<img src="{$baseUri}/images/{if $item['is_active']}eye.png{else}eye-close.png{/if}" alt="Změnit viditelnost">
-				</a>
-				<a n:href="delete, id => $item['photo_id']" class="ajax" title="Smazat">
-					<img src="{$baseUri}/images/cross.png" alt="Smazat">
-				</a>
-				{if !$iterator->isLast()}
-				<a n:href="moveRight, id => $item['photo_id']" class="ajax" title="Vpravo">
-					<img src="{$baseUri}/images/arrow-000-small.png" alt="Vpravo">
-				</a>
-				{/if}
-				</span>
-				{/if}
-			</td>
-				{/foreach}
-		</tr>
-	</tbody>
-</table>
-{/snippet}
-{/if}
+<ul n:snippet="items" class="thumbnails">
+	{foreach $control->components as $control}
+		{control $control}
+	{/foreach}
+</ul>

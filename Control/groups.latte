@@ -11,9 +11,9 @@
 {**
  * Template for groups control.
  *}
-{snippet}
+<ul n:snippet="groups" class="thumbnails">
 	{foreach $control->components as $control}
 		{control $control}
 	{/foreach}
 	{control paginator}
-{/snippet}
+</ul>
