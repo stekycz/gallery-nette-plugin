@@ -21,13 +21,13 @@ change one line in code.
 
 ## Installation
 
-1. Copy all files into folder with your project (libs dir).
+* Copy all files into folder with your project (libs dir).
 
-2. Install all database tables into your database. If it is needed change DataProvider.
-   Default database structure is in /DataProvider/mysql.sql
+* Install all database tables into your database. If it is needed change DataProvider.
+   Default database structure is in `/DataProvider/mysql.sql`.
    If you want to add custom columns just edit existing tables.
 
-3. For easier usage create services for model layer.
+* For easier usage create services for model layer.
 
 ```neon
 parameters:
@@ -50,6 +50,7 @@ services:
 4. Use plugin and create controls.
 
 ```php
+<?php
 new GroupControl($this, 'galleries',
 	$this->context->imageHelper,
 	$this->context->galleryGroupModel,
@@ -57,14 +58,17 @@ new GroupControl($this, 'galleries',
 	$this->context->galleryDataProvider->namespaces,
 	'Homepage:gallery'
 );
+?>
 ```
 ```php
+<?php
 new ItemControl($this, 'photos',
 	$this->context->imageHelper,
 	$this->context->galleryGroupModel,
 	$this->context->galleryItemModel,
 	$id
 );
+?>
 ```
 
 ## Demo
