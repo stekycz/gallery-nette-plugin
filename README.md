@@ -28,6 +28,7 @@ change one line in code.
    If you want to add custom columns just edit existing tables.
 
 3. For easier usage create services for model layer.
+```neon
 	parameters:
 		imageHelper:
 			baseUrl: http://example.com/
@@ -43,8 +44,9 @@ change one line in code.
 			class: \steky\nette\gallery\models\Item(@galleryDataProvider, %gallery.basePath%)
 		galleryGroupModel:
 			class: \steky\nette\gallery\models\Group(@galleryDataProvider, %gallery.basePath%)
-
+```
 4. Use plugin and create controls.
+```php
 	new GroupControl($this, 'galleries',
 		$this->context->imageHelper,
 		$this->context->galleryGroupModel,
@@ -52,14 +54,15 @@ change one line in code.
 		$this->context->galleryDataProvider->namespaces,
 		'Homepage:gallery'
 	);
-
+```
+```php
 	new ItemControl($this, 'photos',
 		$this->context->imageHelper,
 		$this->context->galleryGroupModel,
 		$this->context->galleryItemModel,
 		$id
 	);
-
+```
 ## Demo
 
 Demo application can be found on [nette-gallery.steky.cz](nette-gallery.steky.cz).
