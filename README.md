@@ -28,41 +28,45 @@ change one line in code.
    If you want to add custom columns just edit existing tables.
 
 3. For easier usage create services for model layer.
+
 ```neon
-	parameters:
-		imageHelper:
-			baseUrl: http://example.com/
-			tempDir: files/temp
-		gallery:
-			basePath: %wwwDir%/files/gallery
-	services:
-		imageHelper:
-			class: \ImageHelper(@cache, %imageHelper.baseUrl%,  %imageHelper.tempDir%)
-		galleryDataProvider:
-			class: \steky\nette\gallery\DataProvider\Dibi(@database)
-		galleryItemModel:
-			class: \steky\nette\gallery\models\Item(@galleryDataProvider, %gallery.basePath%)
-		galleryGroupModel:
-			class: \steky\nette\gallery\models\Group(@galleryDataProvider, %gallery.basePath%)
+parameters:
+	imageHelper:
+		baseUrl: http://example.com/
+		tempDir: files/temp
+	gallery:
+		basePath: %wwwDir%/files/gallery
+services:
+	imageHelper:
+		class: \ImageHelper(@cache, %imageHelper.baseUrl%,  %imageHelper.tempDir%)
+	galleryDataProvider:
+		class: \steky\nette\gallery\DataProvider\Dibi(@database)
+	galleryItemModel:
+		class: \steky\nette\gallery\models\Item(@galleryDataProvider, %gallery.basePath%)
+	galleryGroupModel:
+		class: \steky\nette\gallery\models\Group(@galleryDataProvider, %gallery.basePath%)
 ```
+
 4. Use plugin and create controls.
+
 ```php
-	new GroupControl($this, 'galleries',
-		$this->context->imageHelper,
-		$this->context->galleryGroupModel,
-		$this->context->galleryItemModel,
-		$this->context->galleryDataProvider->namespaces,
-		'Homepage:gallery'
-	);
+new GroupControl($this, 'galleries',
+	$this->context->imageHelper,
+	$this->context->galleryGroupModel,
+	$this->context->galleryItemModel,
+	$this->context->galleryDataProvider->namespaces,
+	'Homepage:gallery'
+);
 ```
 ```php
-	new ItemControl($this, 'photos',
-		$this->context->imageHelper,
-		$this->context->galleryGroupModel,
-		$this->context->galleryItemModel,
-		$id
-	);
+new ItemControl($this, 'photos',
+	$this->context->imageHelper,
+	$this->context->galleryGroupModel,
+	$this->context->galleryItemModel,
+	$id
+);
 ```
+
 ## Demo
 
 Demo application can be found on [nette-gallery.steky.cz](nette-gallery.steky.cz).
