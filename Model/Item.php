@@ -9,10 +9,11 @@
  * @copyright Copyright (c) 2011, 2012 Martin Štekl <martin.stekl@gmail.com>
  */
 
-namespace steky\nette\gallery\Model;
-use \Nette\InvalidStateException,
-	\Nette\InvalidArgumentException,
-	\Nette\Http\FileUpload;
+namespace stekycz\gallery\Model;
+
+use \Nette\InvalidStateException;
+use \Nette\InvalidArgumentException;
+use \Nette\Http\FileUpload;
 
 /**
  * Contains basic implementation for item model.
@@ -83,7 +84,7 @@ class Item extends AbstractItem {
 	/**
 	 * Detects extension by file content type. (Only for images.)
 	 *
-	 * @param HttpUploadedFile $file
+	 * @param \Nette\Http\FileUpload $file
 	 * @return string Extension (without dot)
 	 */
 	protected function detectExtension(FileUpload $file) {

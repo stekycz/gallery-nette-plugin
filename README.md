@@ -39,11 +39,11 @@ your own implementation of paginator you have to change one line in code.
         imageHelper:
             class: \ImageHelper(@cache, %imageHelper.baseUrl%,  %imageHelper.tempDir%)
         galleryDataProvider:
-            class: \steky\nette\gallery\DataProvider\Dibi(@database)
+            class: \stekycz\gallery\DataProvider\Dibi(@database)
         galleryItemModel:
-            class: \steky\nette\gallery\models\Item(@galleryDataProvider, %gallery.basePath%)
+            class: \stekycz\gallery\models\Item(@galleryDataProvider, %gallery.basePath%)
         galleryGroupModel:
-            class: \steky\nette\gallery\models\Group(@galleryDataProvider, %gallery.basePath%)
+            class: \stekycz\gallery\models\Group(@galleryDataProvider, %gallery.basePath%)
 ```
 
 4. Use plugin and create controls:
@@ -68,7 +68,8 @@ your own implementation of paginator you have to change one line in code.
 ## Notes
 
 In example templates is used fancybox javascript library for photogalleries and
-fugue icons. Templates should be changed/replaced for using in your own project.
+[Twitter Bootstrap](https://github.com/twitter/bootstrap). Templates should be
+changed/replaced for using in your own project.
 
 ## Author
 

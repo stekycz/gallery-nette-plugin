@@ -9,12 +9,12 @@
  * @copyright Copyright (c) 2011, 2012 Martin Štekl <martin.stekl@gmail.com>
  */
 
-namespace steky\nette\gallery\Control;
-use \steky\nette\gallery\AbstractControl,
-	\steky\nette\gallery\IDataProvider,
-	\steky\nette\gallery\Model\AbstractGroup,
-	\steky\nette\gallery\Model\AbstractItem,
-	\ImageHelper;
+namespace stekycz\gallery\Control;
+
+use \stekycz\gallery\AbstractControl;
+use \stekycz\gallery\Model\AbstractGroup;
+use \stekycz\gallery\Model\AbstractItem;
+use \ImageHelper;
 
 /**
  * Contains basic implementation for item control.
@@ -28,8 +28,8 @@ class ItemCollectionControl extends AbstractControl {
 
 	/**
 	 * @param ImageHelper $imageHelper
-	 * @param steky\nette\gallery\models\AbstractGroup $groupModel
-	 * @param steky\nette\gallery\models\AbstractItem $itemModel
+	 * @param \stekycz\gallery\Model\AbstractGroup $groupModel
+	 * @param \stekycz\gallery\Model\AbstractItem $itemModel
 	 * @param int $group_id
 	 */
 	public function __construct(ImageHelper $imageHelper, AbstractGroup $groupModel, AbstractItem $itemModel, $group_id) {

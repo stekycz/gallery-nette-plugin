@@ -1,11 +1,11 @@
 <?php
 
-use \Nette\Object,
-	\Nette\Caching\Cache,
-	\Nette\Image,
-	\Nette\Utils\Strings,
-	\Nette\Utils\Html,
-	\Nette\InvalidStateException;
+use \Nette\Object;
+use \Nette\Caching\Cache;
+use \Nette\Image;
+use \Nette\Utils\Strings;
+use \Nette\Utils\Html;
+use \Nette\InvalidStateException;
 
 /**
  * Image helper with automatic image resize and cache.

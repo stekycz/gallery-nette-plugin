@@ -9,12 +9,13 @@
  * @copyright Copyright (c) 2011, 2012 Martin Štekl <martin.stekl@gmail.com>
  */
 
-namespace steky\nette\gallery\Control;
-use \Nette\InvalidArgumentException,
-	\steky\nette\gallery\AbstractControl,
-	\steky\nette\gallery\Model\AbstractGroup,
-	\steky\nette\gallery\Model\AbstractItem,
-	\ImageHelper;
+namespace stekycz\gallery\Control;
+
+use \Nette\InvalidArgumentException;
+use \stekycz\gallery\AbstractControl;
+use \stekycz\gallery\Model\AbstractGroup;
+use \stekycz\gallery\Model\AbstractItem;
+use \ImageHelper;
 
 class GroupControl extends AbstractControl {
 
@@ -35,8 +36,8 @@ class GroupControl extends AbstractControl {
 
 	/**
 	 * @param \ImageHelper $imageHelper
-	 * @param \steky\nette\gallery\Model\AbstractGroup $groupModel
-	 * @param \steky\nette\gallery\Model\AbstractItem $itemModel
+	 * @param \stekycz\gallery\Model\AbstractGroup $groupModel
+	 * @param \stekycz\gallery\Model\AbstractItem $itemModel
 	 * @param string $actionViewItems Action to view all items in group
 	 *  @param array $group Group data
 	 */
@@ -51,7 +52,7 @@ class GroupControl extends AbstractControl {
 	/**
 	 * @param bool $admin
 	 * @param string $actionEditGroup Action to edit group
-	 * @return \steky\nette\gallery\Control\GroupControl
+	 * @return \stekycz\gallery\Control\GroupControl
 	 */
 	public function setAdmin($admin, $actionEditGroup = null) {
 		if ($actionEditGroup === null) {

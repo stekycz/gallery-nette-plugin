@@ -9,23 +9,24 @@
  * @copyright Copyright (c) 2011, 2012 Martin Štekl <martin.stekl@gmail.com>
  */
 
-namespace steky\nette\gallery\DataProvider;
-use \Nette,
-	\steky\nette\gallery,
-	\DibiConnection;
+namespace stekycz\gallery\DataProvider;
+
+use \Nette\Object;
+use \DibiConnection;
+use stekycz\gallery\IDataProvider;
 
 /**
  * Contains implementation for quering database using dibi library.
  */
-class Dibi extends Nette\Object implements gallery\IDataProvider {
+class Dibi extends Object implements IDataProvider {
 
 	/**
-	 * @var DibiConnection
+	 * @var \DibiConnection
 	 */
 	private $connection;
 
 	/**
-	 * @param DibiConnection $connection
+	 * @param \DibiConnection $connection
 	 */
 	public function __construct(DibiConnection $connection) {
 		$this->connection = $connection;

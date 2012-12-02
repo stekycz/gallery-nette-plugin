@@ -9,9 +9,10 @@
  * @copyright Copyright (c) 2011, 2012 Martin Štekl <martin.stekl@gmail.com>
  */
 
-namespace steky\nette\gallery\Model;
-use \Nette\InvalidStateException,
-	\Nette\InvalidArgumentException;
+namespace stekycz\gallery\Model;
+
+use \Nette\InvalidStateException;
+use \Nette\InvalidArgumentException;
 
 /**
  * Contains basic implementation for group model.

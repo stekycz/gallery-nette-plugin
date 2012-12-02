@@ -9,9 +9,10 @@
  * @copyright Copyright (c) 2011, 2012 Martin Štekl <martin.stekl@gmail.com>
  */
 
-namespace steky\nette\gallery\Model;
-use \steky\nette\gallery\AbstractModel,
-	\steky\nette\gallery\IDataProvider;
+namespace stekycz\gallery\Model;
+
+use \stekycz\gallery\AbstractModel;
+use \stekycz\gallery\IDataProvider;
 
 /**
  * Defines basic functionality for group model.
@@ -37,7 +38,7 @@ abstract class AbstractGroup extends AbstractModel {
 	protected $namespace_id;
 
 	/**
-	 * @param steky\nette\gallery\IDataProvider $dataProvider
+	 * @param \stekycz\gallery\IDataProvider $dataProvider
 	 * @param string $basePath
 	 */
 	public function __construct(IDataProvider $dataProvider, $basePath) {
@@ -50,7 +51,7 @@ abstract class AbstractGroup extends AbstractModel {
 	 * exists creates it.
 	 *
 	 * @param int $namespace_id
-	 * @return steky\nette\gallery\models\AbstractGroup Fluent interface
+	 * @return \stekycz\gallery\Model\AbstractGroup Fluent interface
 	 */
 	public function useNamespace($namsespace_id) {
 		$this->namespace_id = $namsespace_id;
@@ -104,4 +105,5 @@ abstract class AbstractGroup extends AbstractModel {
 	 * @return array|bool
 	 */
 	abstract public function getById($id);
+
 }

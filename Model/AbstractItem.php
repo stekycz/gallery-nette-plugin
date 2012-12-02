@@ -9,8 +9,9 @@
  * @copyright Copyright (c) 2011, 2012 Martin Štekl <martin.stekl@gmail.com>
  */
 
-namespace steky\nette\gallery\Model;
-use \steky\nette\gallery\AbstractModel;
+namespace stekycz\gallery\Model;
+
+use \stekycz\gallery\AbstractModel;
 
 /**
  * Defines basic functionality for item model.
@@ -66,4 +67,5 @@ abstract class AbstractItem extends AbstractModel {
 	 * @return array|bool
 	 */
 	abstract public function getById($id);
+
 }

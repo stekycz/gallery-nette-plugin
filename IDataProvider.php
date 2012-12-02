@@ -9,7 +9,7 @@
  * @copyright Copyright (c) 2011, 2012 Martin Štekl <martin.stekl@gmail.com>
  */
 
-namespace steky\nette\gallery;
+namespace stekycz\gallery;
 
 /**
  * Define how to communicate with database.

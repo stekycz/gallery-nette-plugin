@@ -9,7 +9,8 @@
  * @copyright Copyright (c) 2011, 2012 Martin Štekl <martin.stekl@gmail.com>
  */
 
-namespace steky\nette\gallery;
+namespace stekycz\gallery;
+
 use \Nette\Object;
 
 /**
@@ -18,9 +19,10 @@ use \Nette\Object;
 abstract class AbstractModel extends Object {
 
 	/**
-	 * @var IDataProvider
+	 * @var \stekycz\gallery\IDataProvider
 	 */
 	protected $dataProvider;
+
 	/**
 	 * @var string
 	 */
@@ -29,7 +31,7 @@ abstract class AbstractModel extends Object {
 	/**
 	 * Creates new instance.
 	 *
-	 * @param IDataProvider $dataProvider
+	 * @param \stekycz\gallery\IDataProvider $dataProvider
 	 * @param string $basePath
 	 */
 	public function __construct(IDataProvider $dataProvider, $basePath) {

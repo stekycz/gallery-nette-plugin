@@ -9,14 +9,13 @@
  * @copyright Copyright (c) 2011, 2012 Martin Štekl <martin.stekl@gmail.com>
  */
 
-namespace steky\nette\gallery\Control;
-use \Nette\InvalidArgumentException,
-	\steky\nette\gallery\AbstractControl,
-	\steky\nette\gallery\IDataProvider,
-	\steky\nette\gallery\Model\AbstractGroup,
-	\steky\nette\gallery\Model\AbstractItem,
-	\ImageHelper,
-	\VisualPaginator;
+namespace stekycz\gallery\Control;
+
+use \stekycz\gallery\AbstractControl;
+use \stekycz\gallery\Model\AbstractGroup;
+use \stekycz\gallery\Model\AbstractItem;
+use \ImageHelper;
+use \VisualPaginator;
 
 /**
  * Contains basic implementation for group control.
@@ -27,8 +26,8 @@ class GroupCollectionControl extends AbstractControl {
 
 	/**
 	 * @param ImageHelper $imageHelper
-	 * @param steky\nette\gallery\models\AbstractGroup $groupModel
-	 * @param steky\nette\gallery\models\AbstractItem $itemModel
+	 * @param \stekycz\gallery\Model\AbstractGroup $groupModel
+	 * @param \stekycz\gallery\Model\AbstractItem $itemModel
 	 * @param array $namespaces Exists namespaces in associative array
 	 */
 	public function __construct(ImageHelper $imageHelper, AbstractGroup $groupModel, AbstractItem $itemModel) {
@@ -42,7 +41,7 @@ class GroupCollectionControl extends AbstractControl {
 	 * Setup namespace for current control.
 	 *
 	 * @param string $namsespace_id
-	 * @return steky\nette\gallery\controls\GroupControl Fluent interface
+	 * @return \stekycz\gallery\Control\GroupControl Fluent interface
 	 */
 	public function useNamespace($namespace_id) {
 		if ($namespace_id) {

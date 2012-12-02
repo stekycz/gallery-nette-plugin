@@ -9,12 +9,13 @@
  * @copyright Copyright (c) 2011, 2012 Martin Štekl <martin.stekl@gmail.com>
  */
 
-namespace steky\nette\gallery;
-use \Nette\Application\UI\Control,
-	\Nette\ComponentModel\Container,
-	\steky\nette\gallery\Model\AbstractGroup,
-	\steky\nette\gallery\Model\AbstractItem,
-	\ImageHelper;
+namespace stekycz\gallery;
+
+use \Nette\Application\UI\Control;
+use \Nette\ComponentModel\Container;
+use \stekycz\gallery\Model\AbstractGroup;
+use \stekycz\gallery\Model\AbstractItem;
+use \ImageHelper;
 
 /**
  * Defines basic functionality for controls.
@@ -25,34 +26,38 @@ abstract class AbstractControl extends Control {
 	 * @var bool Show admin environment?
 	 */
 	protected $isAdmin = false;
+
 	/**
 	 * @var string Path to file with component template
 	 */
 	protected $templateFile;
+
 	/**
 	 * @var string Name of snippet in template
 	 */
 	protected $snippetName;
+
 	/**
 	 * @var ImageHelper Helps with work around pictures
 	 */
 	protected $imageHelper;
 
 	/**
-	 * @var steky\nette\gallery\models\AbstractGroup
+	 * @var \stekycz\gallery\Model\AbstractGroup
 	 */
 	protected $groupModel;
+
 	/**
-	 * @var steky\nette\gallery\models\AbstractItem
+	 * @var \stekycz\gallery\Model\AbstractItem
 	 */
 	protected $itemModel;
 
 	/**
-	 * @param Nette\ComponentModel\Container $parent
+	 * @param \Nette\ComponentModel\Container $parent
 	 * @param string $name
 	 * @paramm ImageHelper $imageHelper
-	 * @param steky\nette\gallery\models\AbstractGroup $groupModel
-	 * @param steky\nette\gallery\models\AbstractItem $itemModel
+	 * @param \stekycz\gallery\Model\AbstractGroup $groupModel
+	 * @param \stekycz\gallery\Model\AbstractItem $itemModel
 	 */
 	public function __construct(ImageHelper $imageHelper, AbstractGroup $groupModel, AbstractItem $itemModel) {
 		$this->imageHelper = $imageHelper;
@@ -62,7 +67,7 @@ abstract class AbstractControl extends Control {
 
 	/**
 	 * @param bool $admin
-	 * @return AbstractGalleryControl
+	 * @return \stekycz\gallery\AbstractControl
 	 */
 	public function setAdmin($admin) {
 		$this->isAdmin = $admin;

@@ -9,11 +9,12 @@
  * @copyright Copyright (c) 2011, 2012 Martin Štekl <martin.stekl@gmail.com>
  */
 
-namespace steky\nette\gallery\Control;
-use \steky\nette\gallery\AbstractControl,
-	\steky\nette\gallery\Model\AbstractGroup,
-	\steky\nette\gallery\Model\AbstractItem,
-	\ImageHelper;
+namespace stekycz\gallery\Control;
+
+use \stekycz\gallery\AbstractControl;
+use \stekycz\gallery\Model\AbstractGroup;
+use \stekycz\gallery\Model\AbstractItem;
+use \ImageHelper;
 
 class ItemControl extends AbstractControl {
 
@@ -25,13 +26,11 @@ class ItemControl extends AbstractControl {
 	public function __construct(ImageHelper $imageHelper, AbstractGroup $groupModel, AbstractItem $itemModel, $item) {
 		parent::__construct($imageHelper, $groupModel, $itemModel);
 		$this->item = $item;
-
 		$this->templateFile = __DIR__ . '/item.latte';
 	}
 
 	public function render() {
 		$this->template->isAdmin = $this->isAdmin;
-
 		$this->template->item = $this->item;
 		$this->template->setFile($this->templateFile);
 		$this->template->render();
