@@ -1,0 +1,36 @@
+{**
+ * For the full copyright and license information, please view
+ * the file license.txt that was distributed with this source code.
+ *
+ * @author Martin Štekl <martin.stekl@gmail.com>
+ * @since 2012.03.27
+ * @license MIT
+ * @copyright Copyright (c) 2011, 2012 Martin Štekl <martin.stekl@gmail.com>
+ *}
+
+{**
+ * Template for ittem control.
+ *
+ * @param bool $isAdmin If it is TRUE show admin buttons
+ * @param array $item Data for item
+ *}
+<li n:snippet="item" class="span2 thumbnail">
+	{? $image_path = '../files/gallery/' . $item['namespace'] .'/' . $item['gallery_id'].'/'.$item['filename']}
+	{$image_path|gallery:$item['title']:$item['title']:'group-'.$item['gallery_id']:'170x125'}
+	<div n:if="$isAdmin" class="caption">
+		<p class="btn-group">
+			<a n:href="moveLeft, id => $item['photo_id']" class="ajax btn" title="Vlevo">
+				<i class="icon-arrow-left"></i>
+			</a>
+			<a n:href="toggleActive, id => $item['photo_id']" class="ajax btn" title="Změnit viditelnost">
+				<i n:class="$item['is_active'] ? icon-eye-open : icon-eye-close"></i>
+			</a>
+			<a n:href="delete, id => $item['photo_id']" class="ajax btn" title="Smazat">
+				<i class="icon-remove"></i>
+			</a>
+			<a n:href="moveRight, id => $item['photo_id']" class="ajax btn" title="Vpravo">
+				<i class="icon-arrow-right"></i>
+			</a>
+		</p>
+	</div>
+</li>

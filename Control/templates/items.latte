@@ -11,6 +11,7 @@
 {**
  * Template for items control.
  *
+ * @param int[] $item_ids
  * @param array $group Data row with informations about group
  *}
 
@@ -18,8 +19,8 @@
 
 <p>{$group['description']}</p>
 
-<ul n:snippet="items" class="thumbnails">
-	{foreach $control->components as $control}
-		{control $control}
+<ul n:if="$item_ids" n:snippet="items" class="thumbnails">
+	{foreach $item_ids as $item_id}
+		{control item-$item_id}
 	{/foreach}
 </ul>

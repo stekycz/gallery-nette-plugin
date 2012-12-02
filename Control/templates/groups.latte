@@ -10,10 +10,14 @@
 
 {**
  * Template for groups control.
+ *
+ * @param int[] $group_ids
  *}
+{if $group_ids}
 <ul n:snippet="groups" class="thumbnails">
-	{foreach $control->components as $control}
-		{control $control}
+	{foreach $group_ids as $group_id}
+		{control group-$group_id}
 	{/foreach}
-	{control paginator}
 </ul>
+{control paginator}
+{/if}

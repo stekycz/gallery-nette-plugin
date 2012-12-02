@@ -23,14 +23,11 @@
 	</a>
 	<div class="caption">
 		<h5>{$group['title']}</h5>
-		<p>
-			{if $group['description']}{$group['description']}<br />{/if}
-			{$group['photo_count']} fotek
-		</p>
-		{if $isAdmin}
-		<p class="btn-group">
+		<p n:if="$group['description']">{$group['description']}</p>
+		<p>{$group['photo_count']} fotek</p>
+		<div n:if="$isAdmin" class="btn-group">
 			<a n:href="toggleActive, id => $group['gallery_id']" class="ajax btn" title="Změnit viditelnost">
-				<i class="icon-eye-{if $group['is_active']}open{else}close{/if}"></i>
+				<i n:class="$group['is_active'] ? 'icon-eye-open' : 'icon-eye-close'"></i>
 			</a>
 			<a href="{plink $actionEditGroup, id => $group['gallery_id']}" class="btn" title="Upravit">
 				<i class="icon-pencil"></i>
@@ -38,7 +35,6 @@
 			<a n:href="delete, id => $group['gallery_id']" class="ajax btn" title="Smazat">
 				<i class="icon-remove"></i>
 			</a>
-		</p>
-		{/if}
+		</div>
 	</div>
 </li>
