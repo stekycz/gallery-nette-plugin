@@ -65,20 +65,28 @@ class GroupControl extends AControl {
 		$this->template->render();
 	}
 
+	/**
+	 * @param int $id
+	 */
 	public function handleToggleActive($id) {
-		$this->template->setFile($this->templateFile);
-		$this->groupModel->toggleActive($id);
-		$this->invalidateControl();
-		if (!$this->presenter->isAjax()) {
+		if ($this->presenter->isAjax()) {
+			$this->template->setFile($this->templateFile);
+			$this->groupModel->toggleActive($id);
+			$this->invalidateControl($this->snippetName);
+		} else {
 			$this->redirect('this');
 		}
 	}
 
+	/**
+	 * @param int $id
+	 */
 	public function handleDelete($id) {
-		$this->template->setFile($this->templateFile);
-		$this->groupModel->delete($id);
-		$this->invalidateControl();
-		if (!$this->presenter->isAjax()) {
+		if ($this->presenter->isAjax()) {
+			$this->template->setFile($this->templateFile);
+			$this->groupModel->delete($id);
+			$this->invalidateControl($this->snippetName);
+		} else {
 			$this->redirect('this');
 		}
 	}

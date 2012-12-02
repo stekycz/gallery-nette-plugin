@@ -2,7 +2,7 @@
 /**
  * For the full copyright and license information, please view
  * the file license.txt that was distributed with this source code.
- * 
+ *
  * @author Martin Štekl <martin.stekl@gmail.com>
  * @since 2012.01.30
  * @license MIT
@@ -151,10 +151,10 @@ class Dibi extends Object implements IDataProvider {
 			LIMIT 1
 		');
 	}
-	
+
 	public function createItem(array $item_data, $group_id) {
 		$this->connection->begin();
-		
+
 		// Counted values
 		$item_data['ordering'] = 1 + (int) $this->connection->fetchSingle('
 			SELECT MAX(tgp.ordering) FROM gallery_photo AS tgp WHERE tgp.gallery_id = %s', $group_id, '
@@ -164,10 +164,10 @@ class Dibi extends Object implements IDataProvider {
 		$item_id = $this->connection->insertId();
 
 		$this->connection->commit();
-		
+
 		return $item_id;
 	}
-	
+
 	public function updateItem($item_id, array $update_data = array()) {
 		$this->connection->begin();
 
@@ -177,7 +177,7 @@ class Dibi extends Object implements IDataProvider {
 
 		$this->connection->commit();
 	}
-	
+
 	public function toggleActiveItem($item_id) {
 		$this->connection->begin();
 
@@ -198,14 +198,14 @@ class Dibi extends Object implements IDataProvider {
 
 		$this->connection->commit();
 	}
-	
+
 	public function deleteItem($item_id) {
 		$this->connection->query('
 			DELETE FROM gallery_photo
 			WHERE photo_id = %s', $item_id, '
 		');
 	}
-	
+
 	public function getItemsByGroup($group_id, $admin = false) {
 		$photo_array = $this->connection->query('
 			SELECT
@@ -221,7 +221,7 @@ class Dibi extends Object implements IDataProvider {
 		')->fetchAssoc('photo_id');
 		return $photo_array;
 	}
-	
+
 	public function getItemById($item_id) {
 		return $this->connection->fetch('
 			SELECT tgp.photo_id, tgp.is_active, tgp.gallery_id, tgp.filename, tgp.title
@@ -231,7 +231,7 @@ class Dibi extends Object implements IDataProvider {
 			LIMIT 1
 		');
 	}
-	
+
 	public function getLeftItemBy($item_id) {
 		return $this->connection->fetchSingle('
 			SELECT tgp.photo_id
@@ -247,7 +247,7 @@ class Dibi extends Object implements IDataProvider {
 			LIMIT 1
 		');
 	}
-	
+
 	public function getRightItemBy($item_id) {
 		return $this->connection->fetchSingle('
 			SELECT tgp.photo_id
@@ -263,7 +263,7 @@ class Dibi extends Object implements IDataProvider {
 			LIMIT 1
 		');
 	}
-	
+
 	public function swapItems($item_id_1, $item_id_2) {
 		$this->connection->begin();
 
@@ -287,5 +287,5 @@ class Dibi extends Object implements IDataProvider {
 
 		$this->connection->commit();
 	}
-	
+
 }

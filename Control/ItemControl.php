@@ -36,20 +36,28 @@ class ItemControl extends AControl {
 		$this->template->render();
 	}
 
+	/**
+	 * @param int $id
+	 */
 	public function handleToggleActive($id) {
-		$this->template->setFile($this->templateFile);
-		$this->itemModel->toggleActive($id);
-		$this->invalidateControl();
-		if (!$this->presenter->isAjax()) {
+		if ($this->presenter->isAjax()) {
+			$this->template->setFile($this->templateFile);
+			$this->itemModel->toggleActive($id);
+			$this->invalidateControl($this->snippetName);
+		} else {
 			$this->redirect('this');
 		}
 	}
 
+	/**
+	 * @param int $id
+	 */
 	public function handleDelete($id) {
-		$this->template->setFile($this->templateFile);
-		$this->itemModel->delete($id);
-		$this->invalidateControl();
-		if (!$this->presenter->isAjax()) {
+		if ($this->presenter->isAjax()) {
+			$this->template->setFile($this->templateFile);
+			$this->itemModel->delete($id);
+			$this->invalidateControl($this->snippetName);
+		} else {
 			$this->redirect('this');
 		}
 	}
@@ -60,10 +68,11 @@ class ItemControl extends AControl {
 	 * @param int $id
 	 */
 	public function handleMoveLeft($id) {
-		$this->template->setFile($this->templateFile);
-		$this->itemModel->moveLeft($id);
-		$this->invalidateControl();
-		if (!$this->presenter->isAjax()) {
+		if ($this->presenter->isAjax()) {
+			$this->template->setFile($this->templateFile);
+			$this->itemModel->moveLeft($id);
+			$this->invalidateControl($this->snippetName);
+		} else {
 			$this->redirect('this');
 		}
 	}
@@ -74,10 +83,11 @@ class ItemControl extends AControl {
 	 * @param int $id
 	 */
 	public function handleMoveRight($id) {
-		$this->template->setFile($this->templateFile);
-		$this->itemModel->moveRight($id);
-		$this->invalidateControl();
-		if (!$this->presenter->isAjax()) {
+		if ($this->presenter->isAjax()) {
+			$this->template->setFile($this->templateFile);
+			$this->itemModel->moveRight($id);
+			$this->invalidateControl($this->snippetName);
+		} else {
 			$this->redirect('this');
 		}
 	}

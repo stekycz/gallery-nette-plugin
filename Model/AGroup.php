@@ -93,6 +93,8 @@ abstract class AGroup extends AModel {
 	 * Returns all groups which are not deleted. If admin is true returns
 	 * invisible groups too.
 	 *
+	 * @param int $page
+	 * @param int $itemPerPage
 	 * @param bool $admin
 	 * @return array
 	 */

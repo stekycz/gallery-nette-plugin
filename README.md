@@ -73,4 +73,4 @@ changed/replaced for using in your own project.
 
 ## Author
 
-The author of the addon is [Martin Å tekl](mailto:martin.stekl@gmail.com).
+The author of the addon is [Martin Štekl](mailto:martin.stekl@gmail.com).

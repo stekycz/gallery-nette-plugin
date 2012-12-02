@@ -20,6 +20,13 @@ use \Nette\Http\FileUpload;
  */
 class Item extends AItem {
 
+	/**
+	 * Creates new item.
+	 *
+	 * @param array $data Data for new group
+	 * @return int|string Item ID
+	 * @throws \Nette\InvalidArgumentException|\Nette\InvalidStateException
+	 */
 	public function create(array $data) {
 		$insert_data = array(
 			'is_active' => true,
@@ -33,11 +40,11 @@ class Item extends AItem {
 			}
 		}
 
-		/* @var $difference array */
 		if (!($difference = array_diff(static::$basicColumns, array_keys($insert_data)))) {
-			throw new InvalidStateException('Missing required fields ['.implode(', ', $difference).'].');
+			throw new InvalidStateException('Missing required fields [' . implode(', ', $difference) . '].');
 		}
 
+		/** @var \Nette\Http\FileUpload $file */
 		$file = $data[static::FILE_KEY];
 		if (!$file->isImage()) {
 			throw new InvalidArgumentException('Given file is not image. It is [' . $file->getContentType() . '].');
@@ -60,6 +67,8 @@ class Item extends AItem {
 	 * Updates photo. It means only extended info. New image should be created, not updated.
 	 *
 	 * @param array $data
+	 * @return int|string
+	 * @throws \Nette\InvalidArgumentException
 	 */
 	public function update(array $data) {
 		if (!array_key_exists('photo_id', $data)) {
@@ -86,6 +95,7 @@ class Item extends AItem {
 	 *
 	 * @param \Nette\Http\FileUpload $file
 	 * @return string Extension (without dot)
+	 * @throws \Nette\InvalidArgumentException
 	 */
 	protected function detectExtension(FileUpload $file) {
 		$content_type = $file->getContentType();
@@ -104,6 +114,11 @@ class Item extends AItem {
 		}
 	}
 
+	/**
+	 * @param int $id
+	 * @param string $filename
+	 * @return string
+	 */
 	public function getPathImage($id, $filename) {
 		$groupModel = new Group($this->dataProvider, $this->basePath);
 		$group_row = $this->dataProvider->getGroupById($id);
@@ -111,10 +126,16 @@ class Item extends AItem {
 		return $groupModel->getPathGallery($id) . '/' . $filename;
 	}
 
+	/**
+	 * @param int $id
+	 */
 	public function toggleActive($id) {
 		$this->dataProvider->toggleActiveItem($id);
 	}
 
+	/**
+	 * @param int $id
+	 */
 	public function delete($id) {
 		$this->deleteFile($id);
 		$this->dataProvider->deleteItem($id);
@@ -123,7 +144,8 @@ class Item extends AItem {
 	/**
 	 * Deletes photo file.
 	 *
-	 * @param int $id Photo ID
+	 * @param int $id Item ID
+	 * @throws \Nette\InvalidArgumentException
 	 */
 	protected function deleteFile($id) {
 		$result = $this->dataProvider->getItemById($id);
@@ -141,11 +163,17 @@ class Item extends AItem {
 		}
 	}
 
+	/**
+	 * @param int $id
+	 */
 	public function moveLeft($id) {
 		$left_id = $this->dataProvider->getLeftItemBy($id);
 		$this->swapPhotos($id, $left_id);
 	}
 
+	/**
+	 * @param int $id
+	 */
 	public function moveRight($id) {
 		$right_id = $this->dataProvider->getRightItemBy($id);
 		$this->swapPhotos($id, $right_id);
@@ -161,10 +189,19 @@ class Item extends AItem {
 		$this->dataProvider->swapItems($photo_id_1, $photo_id_2);
 	}
 
+	/**
+	 * @param int $id
+	 * @param bool $admin
+	 * @return array
+	 */
 	public function getByGallery($id, $admin = false) {
 		return $this->dataProvider->getItemsByGroup($id, $admin);
 	}
 
+	/**
+	 * @param int $id
+	 * @return array
+	 */
 	public function getById($id) {
 		return $this->dataProvider->getItemById($id);
 	}
