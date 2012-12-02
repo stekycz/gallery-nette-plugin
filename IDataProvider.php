@@ -60,7 +60,7 @@ interface IDataProvider {
 	 * @param bool $admin
 	 * @return int
 	 */
-	public function getGroupCount($namespace_id, $admin = false);
+	public function countGroups($namespace_id, $admin = false);
 	
 	/**
 	 * Returns data for all groups in given namespace. This helps with paging.

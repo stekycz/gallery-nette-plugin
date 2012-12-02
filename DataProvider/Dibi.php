@@ -13,7 +13,7 @@ namespace stekycz\gallery\DataProvider;
 
 use \Nette\Object;
 use \DibiConnection;
-use stekycz\gallery\IDataProvider;
+use \stekycz\gallery\IDataProvider;
 
 /**
  * Contains implementation for quering database using dibi library.
@@ -32,17 +32,16 @@ class Dibi extends Object implements IDataProvider {
 		$this->connection = $connection;
 	}
 
+	/**
+	 * Returs associative array of namespaces.
+	 *
+	 * @return array
+	 */
 	public function getNamespaces() {
-		static $cache = null;
-
-		if ($cache === null) {
-			$cache = $this->connection->fetchPairs('
-				SELECT tgn.namespace_id, tgn.name
-				FROM gallery_namespace AS tgn
-			');
-		}
-
-		return $cache;
+		return $this->connection->query('
+			SELECT tgn.namespace_id, tgn.name
+			FROM gallery_namespace AS tgn
+		')->fetchPairs();
 	}
 
 	public function createGroup(array $group_data) {
@@ -94,7 +93,7 @@ class Dibi extends Object implements IDataProvider {
 		');
 	}
 
-	public function getGroupCount($namespace_id, $admin = false) {
+	public function countGroups($namespace_id, $admin = false) {
 		return $this->connection->fetchSingle('
 			SELECT COUNT(*)
 			FROM gallery AS tg
@@ -112,7 +111,7 @@ class Dibi extends Object implements IDataProvider {
 		$limit = $itemPerPage;
 		$offset = ($page - 1) * $itemPerPage;
 
-		$group_array = $this->connection->fetchAll('
+		$group_array = $this->connection->query('
 			SELECT
 				tg.gallery_id,
 				tg.namespace_id,
@@ -137,7 +136,7 @@ class Dibi extends Object implements IDataProvider {
 			%SQL', (!$admin ? 'AND tg.is_active = 1' : ''), '
 			HAVING photo_count > 0
 			%lmt', $limit, ' %ofs', $offset, '
-		');
+		')->fetchAssoc('gallery_id');
 		return $group_array;
 	}
 
@@ -208,7 +207,7 @@ class Dibi extends Object implements IDataProvider {
 	}
 	
 	public function getItemsByGroup($group_id, $admin = false) {
-		$photo_array = $this->connection->fetchAll('
+		$photo_array = $this->connection->query('
 			SELECT
 				tgp.photo_id, tgp.is_active, tgp.gallery_id,
 				tgp.filename, tgp.title,
@@ -219,7 +218,7 @@ class Dibi extends Object implements IDataProvider {
 			WHERE tg.gallery_id = %s', $group_id, '
 				%SQL', (!$admin ? 'AND tgp.is_active = 1' : ''), '
 			ORDER BY tgp.ordering
-		');
+		')->fetchAssoc('photo_id');
 		return $photo_array;
 	}
 	
