@@ -17,7 +17,7 @@ use \Nette\InvalidArgumentException;
 /**
  * Contains basic implementation for group model.
  */
-class Group extends AbstractGroup {
+class Group extends AGroup {
 
 	public function create(array $data) {
 		$insert_data = array(
@@ -101,7 +101,7 @@ class Group extends AbstractGroup {
 
 		$itemModel = new Item($this->dataProvider, $this->basePath);
 		foreach ($files as $file) {
-			$files_data[AbstractItem::FILE_KEY] = $file;
+			$files_data[AItem::FILE_KEY] = $file;
 			$itemModel->create($files_data);
 		}
 	}
@@ -146,7 +146,7 @@ class Group extends AbstractGroup {
 	}
 
 	public function getCount($admin = false) {
-		return $this->dataProvider->getGroupCount($this->namespace_id, $admin);
+		return $this->dataProvider->countGroups($this->namespace_id, $admin);
 	}
 
 	public function getAll($page = 1, $itemPerPage = 25, $admin = false) {

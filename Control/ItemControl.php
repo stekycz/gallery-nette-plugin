@@ -11,22 +11,22 @@
 
 namespace stekycz\gallery\Control;
 
-use \stekycz\gallery\AbstractControl;
-use \stekycz\gallery\Model\AbstractGroup;
-use \stekycz\gallery\Model\AbstractItem;
+use \stekycz\gallery\AControl;
+use \stekycz\gallery\Model\AGroup;
+use \stekycz\gallery\Model\AItem;
 use \ImageHelper;
 
-class ItemControl extends AbstractControl {
+class ItemControl extends AControl {
 
 	/**
 	 * @var array Item data
 	 */
 	protected $item;
 
-	public function __construct(ImageHelper $imageHelper, AbstractGroup $groupModel, AbstractItem $itemModel, $item) {
-		parent::__construct($imageHelper, $groupModel, $itemModel);
+	public function __construct(ImageHelper $imageHelper, AGroup $groupModel, AItem $itemModel, $item, $isAdmin = false) {
+		parent::__construct($imageHelper, $groupModel, $itemModel, $isAdmin);
 		$this->item = $item;
-		$this->templateFile = __DIR__ . '/item.latte';
+		$this->templateFile = __DIR__ . '/templates/item.latte';
 	}
 
 	public function render() {
@@ -40,12 +40,18 @@ class ItemControl extends AbstractControl {
 		$this->template->setFile($this->templateFile);
 		$this->itemModel->toggleActive($id);
 		$this->invalidateControl();
+		if (!$this->presenter->isAjax()) {
+			$this->redirect('this');
+		}
 	}
 
 	public function handleDelete($id) {
 		$this->template->setFile($this->templateFile);
 		$this->itemModel->delete($id);
 		$this->invalidateControl();
+		if (!$this->presenter->isAjax()) {
+			$this->redirect('this');
+		}
 	}
 
 	/**
@@ -57,6 +63,9 @@ class ItemControl extends AbstractControl {
 		$this->template->setFile($this->templateFile);
 		$this->itemModel->moveLeft($id);
 		$this->invalidateControl();
+		if (!$this->presenter->isAjax()) {
+			$this->redirect('this');
+		}
 	}
 
 	/**
@@ -68,6 +77,9 @@ class ItemControl extends AbstractControl {
 		$this->template->setFile($this->templateFile);
 		$this->itemModel->moveRight($id);
 		$this->invalidateControl();
+		if (!$this->presenter->isAjax()) {
+			$this->redirect('this');
+		}
 	}
 
 }

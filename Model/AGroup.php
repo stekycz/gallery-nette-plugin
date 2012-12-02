@@ -11,13 +11,13 @@
 
 namespace stekycz\gallery\Model;
 
-use \stekycz\gallery\AbstractModel;
+use \stekycz\gallery\AModel;
 use \stekycz\gallery\IDataProvider;
 
 /**
  * Defines basic functionality for group model.
  */
-abstract class AbstractGroup extends AbstractModel {
+abstract class AGroup extends AModel {
 
 	const DEFAULT_NAMESPACE_ID = 1;
 
@@ -51,7 +51,7 @@ abstract class AbstractGroup extends AbstractModel {
 	 * exists creates it.
 	 *
 	 * @param int $namespace_id
-	 * @return \stekycz\gallery\Model\AbstractGroup Fluent interface
+	 * @return \stekycz\gallery\Model\AGroup Fluent interface
 	 */
 	public function useNamespace($namsespace_id) {
 		$this->namespace_id = $namsespace_id;

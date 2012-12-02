@@ -13,14 +13,14 @@ namespace stekycz\gallery;
 
 use \Nette\Application\UI\Control;
 use \Nette\ComponentModel\Container;
-use \stekycz\gallery\Model\AbstractGroup;
-use \stekycz\gallery\Model\AbstractItem;
+use \stekycz\gallery\Model\AGroup;
+use \stekycz\gallery\Model\AItem;
 use \ImageHelper;
 
 /**
  * Defines basic functionality for controls.
  */
-abstract class AbstractControl extends Control {
+abstract class AControl extends Control {
 
 	/**
 	 * @var bool Show admin environment?
@@ -38,43 +38,34 @@ abstract class AbstractControl extends Control {
 	protected $snippetName;
 
 	/**
-	 * @var ImageHelper Helps with work around pictures
+	 * @var \ImageHelper Helps with work around pictures
 	 */
 	protected $imageHelper;
 
 	/**
-	 * @var \stekycz\gallery\Model\AbstractGroup
+	 * @var \stekycz\gallery\Model\AGroup
 	 */
 	protected $groupModel;
 
 	/**
-	 * @var \stekycz\gallery\Model\AbstractItem
+	 * @var \stekycz\gallery\Model\AItem
 	 */
 	protected $itemModel;
 
 	/**
-	 * @param \Nette\ComponentModel\Container $parent
-	 * @param string $name
 	 * @paramm ImageHelper $imageHelper
-	 * @param \stekycz\gallery\Model\AbstractGroup $groupModel
-	 * @param \stekycz\gallery\Model\AbstractItem $itemModel
+	 * @param \stekycz\gallery\Model\AGroup $groupModel
+	 * @param \stekycz\gallery\Model\AItem $itemModel
+	 * @param bool $isAdmin
 	 */
-	public function __construct(ImageHelper $imageHelper, AbstractGroup $groupModel, AbstractItem $itemModel) {
+	public function __construct(ImageHelper $imageHelper, AGroup $groupModel, AItem $itemModel, $isAdmin = false) {
 		$this->imageHelper = $imageHelper;
 		$this->groupModel = $groupModel;
 		$this->itemModel = $itemModel;
+		$this->isAdmin = $isAdmin;
 	}
 
-	/**
-	 * @param bool $admin
-	 * @return \stekycz\gallery\AbstractControl
-	 */
-	public function setAdmin($admin) {
-		$this->isAdmin = $admin;
-		return $this;
-	}
-
-	protected function createTemplate($class = NULL) {
+	protected function createTemplate($class = null) {
 		$template = parent::createTemplate($class);
 		$template->registerHelper('resize', callback($this->imageHelper, 'resize'));
 		$template->registerHelper('gallery', callback($this->imageHelper, 'gallery'));

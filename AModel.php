@@ -16,7 +16,7 @@ use \Nette\Object;
 /**
  * Defines basic functionality for model.
  */
-abstract class AbstractModel extends Object {
+abstract class AModel extends Object {
 
 	/**
 	 * @var \stekycz\gallery\IDataProvider

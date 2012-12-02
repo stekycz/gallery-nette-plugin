@@ -11,37 +11,42 @@
 
 namespace stekycz\gallery\Control;
 
-use \stekycz\gallery\AbstractControl;
-use \stekycz\gallery\Model\AbstractGroup;
-use \stekycz\gallery\Model\AbstractItem;
+use \stekycz\gallery\AControl;
+use Nette\Application\UI\Multiplier;
+use \stekycz\gallery\Model\AGroup;
+use \stekycz\gallery\Model\AItem;
 use \ImageHelper;
 use \VisualPaginator;
 
 /**
  * Contains basic implementation for group control.
  */
-class GroupCollectionControl extends AbstractControl {
+class GroupCollectionControl extends AControl {
 
 	const DEFAULT_ITEMS_PER_PAGE = 25;
 
 	/**
-	 * @param ImageHelper $imageHelper
-	 * @param \stekycz\gallery\Model\AbstractGroup $groupModel
-	 * @param \stekycz\gallery\Model\AbstractItem $itemModel
-	 * @param array $namespaces Exists namespaces in associative array
+	 * @var array
 	 */
-	public function __construct(ImageHelper $imageHelper, AbstractGroup $groupModel, AbstractItem $itemModel) {
-		parent::__construct($imageHelper, $groupModel, $itemModel);
+	private $groups;
 
-		$this->templateFile = __DIR__ . '/groups.latte';
-		$this->useNamespace(AbstractGroup::DEFAULT_NAMESPACE_ID);
+	/**
+	 * @param \ImageHelper $imageHelper
+	 * @param \stekycz\gallery\Model\AGroup $groupModel
+	 * @param \stekycz\gallery\Model\AItem $itemModel
+	 * @param bool $isAdmin
+	 */
+	public function __construct(ImageHelper $imageHelper, AGroup $groupModel, AItem $itemModel, $isAdmin = false) {
+		parent::__construct($imageHelper, $groupModel, $itemModel, $isAdmin);
+		$this->templateFile = __DIR__ . '/templates/groups.latte';
+		$this->useNamespace(AGroup::DEFAULT_NAMESPACE_ID);
 	}
 
 	/**
 	 * Setup namespace for current control.
 	 *
 	 * @param string $namsespace_id
-	 * @return \stekycz\gallery\Control\GroupControl Fluent interface
+	 * @return \stekycz\gallery\Control\GroupCollectionControl Fluent interface
 	 */
 	public function useNamespace($namespace_id) {
 		if ($namespace_id) {
@@ -58,14 +63,29 @@ class GroupCollectionControl extends AbstractControl {
 			$paginator->itemsPerPage = $groups_per_page;
 		}
 
-		$groups = $this->groupModel->getAll($paginator->page, $paginator->itemsPerPage, $this->isAdmin);
-		foreach ($groups as $group) {
-			$control = new GroupControl($this->imageHelper, $this->groupModel, $this->itemModel, $this->isAdmin ? 'Homepage:adminGallery' : 'Homepage:gallery', $group);
-			$control->setAdmin($this->isAdmin, 'Homepage:editGallery');
-			$this->addComponent($control, 'group_'.sha1(serialize($group)));
-		}
+		$this->groups = $this->groupModel->getAll($paginator->page, $paginator->itemsPerPage, $this->isAdmin);
+		$this->template->group_ids = array_keys($this->groups);
 
 		$this->template->render();
+	}
+
+	public function createComponentGroup() {
+		$imageHelper = $this->imageHelper;
+		$groupModel = $this->groupModel;
+		$itemModel = $this->itemModel;
+		$isAdmin = $this->isAdmin;
+		$groups = $this->groups;
+		return new Multiplier(function ($group_id) use ($imageHelper, $groupModel, $itemModel, $isAdmin, $groups) {
+			$control = new GroupControl(
+				$imageHelper,
+				$groupModel,
+				$itemModel,
+				$isAdmin ? 'Homepage:adminGallery' : 'Homepage:gallery',
+				$groups[$group_id],
+				$isAdmin, 'Homepage:editGallery'
+			);
+			return $control;
+		});
 	}
 
 	public function createComponentPaginator() {

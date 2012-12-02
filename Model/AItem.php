@@ -11,12 +11,12 @@
 
 namespace stekycz\gallery\Model;
 
-use \stekycz\gallery\AbstractModel;
+use \stekycz\gallery\AModel;
 
 /**
  * Defines basic functionality for item model.
  */
-abstract class AbstractItem extends AbstractModel {
+abstract class AItem extends AModel {
 
 	const FILE_KEY = 'file';
 

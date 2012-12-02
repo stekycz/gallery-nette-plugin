@@ -18,7 +18,7 @@ use \Nette\Http\FileUpload;
 /**
  * Contains basic implementation for item model.
  */
-class Item extends AbstractItem {
+class Item extends AItem {
 
 	public function create(array $data) {
 		$insert_data = array(
